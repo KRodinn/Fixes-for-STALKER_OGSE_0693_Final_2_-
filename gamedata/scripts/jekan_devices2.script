@@ -2339,12 +2339,10 @@ end
 -- Прибор из башни, бьющий по мозгам ------------------------------------------------------------------------------------------------------------------------------------------
 
 local WIDTH_FACTOR = device().height / device().width / 0.75
-local tb_wnd
 
 class "tower_box" (CUIScriptWnd)
 
 function tower_box:__init() super()
-	tb_wnd = self
     self.btn_v_pressed     = -1
     self.btn_h_pressed     = -1
     self.arrow_angle_min   = math.rad (13)  -- начальный угол
@@ -2363,12 +2361,9 @@ function tower_box:__init() super()
     self:Bind      ()
 
     self:OnHButtonClicked(self.btn_h_0, 0) -- первая горизонтальная кнопка должна быть нажата по умолчанию.
-	--log1("--tower_box:__init()")
 end
 
-function tower_box:__finalize()
-	--log1("~~tower_box:__finalize()")
-end
+function tower_box:__finalize() end
 
 function tower_box:Bind()
     self.sm_update = {signal = "on_update", ['self'] = self, fun = self.onUpdate}
@@ -2438,9 +2433,9 @@ function tower_box:InitApp()
         btn:SetColor(GetARGB(0,255,255,255))
 
         self:Register(btn, name)
-        self:Connect(name, ui_events.BUTTON_CLICKED       , self.OnVButtonClicked , nil, btn, i)
-        self:Connect(name, ui_events.STATIC_FOCUS_RECEIVED, self.OnVButtonReceived, nil, btn, i)
-        self:Connect(name, ui_events.STATIC_FOCUS_LOST    , self.OnVButtonLost    , nil, btn, i)
+        self:Connect(name, ui_events.BUTTON_CLICKED       , self.OnVButtonClicked , self, btn, i)
+        self:Connect(name, ui_events.STATIC_FOCUS_RECEIVED, self.OnVButtonReceived, self, btn, i)
+        self:Connect(name, ui_events.STATIC_FOCUS_LOST    , self.OnVButtonLost    , self, btn, i)
     end
 
     for i = 0, 4, 4 do
@@ -2451,9 +2446,9 @@ function tower_box:InitApp()
         btn:SetColor(GetARGB(0,255,255,255))
 
         self:Register(btn, name)
-        self:Connect(name, ui_events.BUTTON_CLICKED       , self.OnHButtonClicked , nil, btn, i)
-        self:Connect(name, ui_events.STATIC_FOCUS_RECEIVED, self.OnHButtonReceived, nil, btn, i)
-        self:Connect(name, ui_events.STATIC_FOCUS_LOST    , self.OnHButtonLost    , nil, btn, i)
+        self:Connect(name, ui_events.BUTTON_CLICKED       , self.OnHButtonClicked , self, btn, i)
+        self:Connect(name, ui_events.STATIC_FOCUS_RECEIVED, self.OnHButtonReceived, self, btn, i)
+        self:Connect(name, ui_events.STATIC_FOCUS_LOST    , self.OnHButtonLost    , self, btn, i)
     end
 end
 
@@ -2509,33 +2504,33 @@ function tower_box:onUpdate()
 end
 
 function tower_box:OnVButtonClicked(btn, i)
-    local btn_id = i + tb_wnd.btn_h_pressed
+    local btn_id = i + self.btn_h_pressed
 
-    if tb_wnd.btn_v_pressed == btn_id then return end -- не обрабатывать уже нажатую
-    tb_wnd.btn_v:InitTexture('ui_tb_v_button_'..i)
-    tb_wnd:OnVButtonLost(btn, i) -- потушить подсветку
-    tb_wnd.counter = tb_wnd.counter + 1
-    local prev_btn_id = tb_wnd.btn_v_pressed
-    tb_wnd.btn_v_pressed = btn_id
+    if self.btn_v_pressed == btn_id then return end -- не обрабатывать уже нажатую
+    self.btn_v:InitTexture('ui_tb_v_button_'..i)
+    self:OnVButtonLost(btn, i) -- потушить подсветку
+    self.counter = self.counter + 1
+    local prev_btn_id = self.btn_v_pressed
+    self.btn_v_pressed = btn_id
     soundtrack.towerbox_btn_press()
 
     if prev_btn_id == -1 then -- если первый запуск, то сразу установить на начальную позицию
-        tb_wnd.arrow:SetHeading(tb_wnd.arrow_angle_min)
+        self.arrow:SetHeading(self.arrow_angle_min)
     else
-        local valid_btn = tb_wnd.counter == btn_id -- нажата "правильная" кнопка?
-        tb_wnd.arrow_angle = tb_wnd.arrow:GetHeading() -- текущий угол стрелки
+        local valid_btn = self.counter == btn_id -- нажата "правильная" кнопка?
+        self.arrow_angle = self.arrow:GetHeading() -- текущий угол стрелки
 
         if btn_id > prev_btn_id then -- если нажатая кнопка больше предыдущей, то двигать стрелку "вверх"
 
             if not valid_btn then
                 if btn_id > 7 then btn_id = 7 end
             end
-            tb_wnd.arrow_angle_max  = tb_wnd.arrow_angle_min - (btn_id - 1) * tb_wnd.btn_angle_range
-            tb_wnd.move_arrow_up = true
+            self.arrow_angle_max  = self.arrow_angle_min - (btn_id - 1) * self.btn_angle_range
+            self.move_arrow_up = true
         end
 
         if not valid_btn then -- если неверная кнопка, то после движения "вверх" опустить да начального значения
-            tb_wnd.move_arrow_down = true--
+            self.move_arrow_down = true--
         end
         level.disable_input() -- не дать нажимать ничего, пока движется стрелка
     end
@@ -2543,32 +2538,32 @@ function tower_box:OnVButtonClicked(btn, i)
 end
 
 function tower_box:OnVButtonReceived(btn, i)
-    local btn_id = i + tb_wnd.btn_h_pressed
-    if tb_wnd.btn_v_pressed == btn_id then return end -- нажатую не посвечивать
+    local btn_id = i + self.btn_h_pressed
+    if self.btn_v_pressed == btn_id then return end -- нажатую не посвечивать
     btn:SetColor(GetARGB(255,255,255,255))
 end
 
 function tower_box:OnVButtonLost(btn, i)
-    local btn_id = i + tb_wnd.btn_h_pressed
-    if tb_wnd.btn_v_pressed == btn_id then return end -- не обрабатывать уже нажатую
+    local btn_id = i + self.btn_h_pressed
+    if self.btn_v_pressed == btn_id then return end -- не обрабатывать уже нажатую
     btn:SetColor(GetARGB(0,255,255,255))
 end
 
 function tower_box:OnHButtonClicked(btn, i)
-    if tb_wnd.btn_h_pressed == i then return end -- не обрабатывать уже нажатую
-    tb_wnd.btn_h:InitTexture('ui_tb_h_button_'..i) -- !!! ИСПРАВИТЬ В ТЕКСТУРАХ 1 и 2 на 0 и 4!!!
-    tb_wnd:OnHButtonLost(btn, i)                      -- потушить подсветку
-    tb_wnd.btn_h_pressed = i
-    tb_wnd:OnVButtonClicked(tb_wnd.btn_v_1, 1)       -- и нажать первую вертикальную кнопку
+    if self.btn_h_pressed == i then return end -- не обрабатывать уже нажатую
+    self.btn_h:InitTexture('ui_tb_h_button_'..i) -- !!! ИСПРАВИТЬ В ТЕКСТУРАХ 1 и 2 на 0 и 4!!!
+    self:OnHButtonLost(btn, i)                      -- потушить подсветку
+    self.btn_h_pressed = i
+    self:OnVButtonClicked(self.btn_v_1, 1)       -- и нажать первую вертикальную кнопку
 end
 
 function tower_box:OnHButtonReceived(btn, i)
-    if tb_wnd.btn_h_pressed == i then return end -- нажатую не посвечивать
+    if self.btn_h_pressed == i then return end -- нажатую не посвечивать
     btn:SetColor(GetARGB(255,255,255,255))
 end
 
 function tower_box:OnHButtonLost(btn, i)
-    if tb_wnd.btn_h_pressed == i then return end -- не обрабатывать уже нажатую
+    if self.btn_h_pressed == i then return end -- не обрабатывать уже нажатую
     btn:SetColor(GetARGB(0,255,255,255))
 end
 
@@ -2577,32 +2572,21 @@ end
 function tower_box:Exit()
     self:unBind()
     self:GetHolder():start_stop_menu(self,true)
-	tb_wnd = nil --KRodin: отпускаем объект для сборщика мусора.
 end
 
 function tower_box:OnKeyboard(dik, keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE then
 			self:unBind()
-			tb_wnd = nil --KRodin: отпускаем объект для сборщика мусора.
 		end
 	end
-end
-
-function tower_box1_1()
-	local spwn = tower_box()
-	level.start_stop_menu(spwn,true)
 end
 
 -----------------------------------------------------------------------------------------------
 
 
-
-
-
---KRodin: на данный момент оно не используется нигде. Походу, недоделанный квест.
-
 -- Тайник сержанта из Мертвого города ------------------------------------------------------------------------------------------------------------------------------------------
+
 function city_tower_box()
 	local spwn = city_tower_box_1(get_hud())
 	level.start_stop_menu(spwn,true)
@@ -2665,3 +2649,10 @@ function city_tower_box_1:on_quit()
 	self.dlg = nil
 end
 -----------------------------------------------------------------------------------------------
+
+function tower_box1_1()
+	local spwn = tower_box()
+	level.start_stop_menu(spwn,true)
+end
+
+--------------------------------------
