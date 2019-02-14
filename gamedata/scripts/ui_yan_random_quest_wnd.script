@@ -10,25 +10,23 @@
 local money_koef = 1.75 -- Наценка на предмет, относительно базовой стоимости (cost) 
 
 function open_yan_random_quest_wnd(npc)
-	local spwn = yan_random_quest_wnd(npc)
-	level.start_stop_menu(spwn, true)
+	local spwn = yan_random_quest_wnd(get_hud(), npc)
+	level.start_stop_menu(spwn,true)
 end
 
 local delete_table = {} -- табличка под предметы, которые мы в будущем будем удалять
 
-
-local yrq_wnd
 class "yan_random_quest_wnd" (CUIScriptWnd)
-function yan_random_quest_wnd:__init(npc) super()
-	yrq_wnd = self
+
+function yan_random_quest_wnd:__init(owner, npc) super()
+	self.dlg = self
+	self.owner = owner
 	self.npc = npc
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--yan_random_quest_wnd:__init()")
 end
-function yan_random_quest_wnd:__finalize()
-	--log1("~~yan_random_quest_wnd:__finalize()")
-end
+
+function yan_random_quest_wnd:____finalize() end
 
 function yan_random_quest_wnd:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -164,62 +162,79 @@ end
 
 function yan_random_quest_wnd:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
-	self:AddCallback("btn_give_item", ui_events.BUTTON_CLICKED, self.transfer_items_to_npc)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
+	self:AddCallback("btn_give_item", ui_events.BUTTON_CLICKED, self.transfer_items_to_npc, self)
 end
 
 -- Выход из меню
 function yan_random_quest_wnd:on_quit()
-	yrq_wnd:GetHolder():start_stop_menu(yrq_wnd, true)
-	yrq_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 end
 
+--[[
+-- CallBack на клавиатуру
 function yan_random_quest_wnd:OnKeyboard(dik, keyboard_action)
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE then
-			yrq_wnd = nil
+			--self:transfer_items_to_npc()
 		end
 	end
 end
+--]]
 
 -- Передача (удаление) вещей и выдача денег актору
 function yan_random_quest_wnd:transfer_items_to_npc()
 	local sum = 0 -- сумма денег для передачи
+	
 	delete_table = {} -- переинициализируем таблицу смертников
-
-	for _, type in ipairs({"a", "m"}) do --Артефакты и части монстров
-		for i = 1, 3 do
-			local i_m = type == "m" and i+3 or i
-			if yrq_wnd[type..i] ~= "" and db.actor:object(yrq_wnd[type..i]) then
-				local sum_i = tonumber(yrq_wnd["edit_"..i_m]:GetText())
-				if sum_i and sum_i > 0 then 
-					if sum_i > yrq_wnd["count"..i_m] then
-						sum_i = yrq_wnd["count"..i_m]
-					end
-					sum = sum + math.ceil(sys_ini:r_u32(yrq_wnd[type..i], "cost") * money_koef * sum_i)
-					relocate_item(yrq_wnd.npc, yrq_wnd[type..i], sum_i)
-					yrq_wnd:delete_item_by_num(yrq_wnd[type..i], sum_i)
-				end
+	
+	-- Артефакты
+	for i=1, 3 do
+		if self["a"..tostring(i)] ~= "" and db.actor:object(self["a"..tostring(i)]) then
+			local sum_i = tonumber(self["edit_"..tostring(i)]:GetText())
+			if sum_i and sum_i > 0 then 
+				log1(self["a"..tostring(i)].." ".."sum_i = "..tostring(sum_i)) 
+				if sum_i > self["count"..tostring(i)] then sum_i = self["count"..tostring(i)] end
+				sum = sum + math.ceil(sys_ini:r_u32(self["a"..tostring(i)], "cost")*money_koef*sum_i)
+				relocate_item(self.npc, self["a"..tostring(i)], sum_i)
+				self:delete_item_by_num(self["a"..tostring(i)], sum_i)
+			else 
+				log1("sum_i = nil!") 
 			end
 		end
 	end
-
-	if next(delete_table) then
-		for _, v in pairs(delete_table) do
-			local sobj = alife():object(v:id())
-			if sobj then
-				alife():release(sobj, true)
+		
+	-- Запчасти монстров
+	for i=1, 3 do
+		if self["m"..tostring(i)] ~= "" and db.actor:object(self["m"..tostring(i)]) then
+			local sum_i = tonumber(self["edit_"..tostring(i+3)]:GetText())
+			if sum_i and sum_i > 0 then 
+				log1(self["m"..tostring(i)].." ".."sum_i = "..tostring(sum_i)) 
+				if sum_i > self["count"..tostring(i+3)] then sum_i = self["count"..tostring(i+3)] end
+				sum = sum + math.ceil(sys_ini:r_u32(self["m"..tostring(i)], "cost")*money_koef*sum_i)
+				relocate_item(self.npc, self["m"..tostring(i)], sum_i)
+				self:delete_item_by_num(self["m"..tostring(i)], sum_i)
+			else 
+				log1("sum_i = nil!") 
 			end
 		end
 	end
-
+		
+	if delete_table ~= {} then
+		log1("Начинаем удалять вещи.")
+		for k,v in pairs(delete_table) do
+			local obj = alife():object(v:id())
+			alife():release(obj, true)
+		end
+		log1("Всё удалили.")
+	end
+	
 	-- Отдаём деньги игроку (зря, что ли он лишается того, чего он заработал потом и кровью!?!?)
-	if sum ~= 0 then
-		dialogs.relocate_money(yrq_wnd.npc, sum, "in")
-	end
-
-	yrq_wnd:on_quit() -- Выходим из меню
+	if sum ~= 0 then dialogs.relocate_money(self.npc, sum, "in") else log1("Нечего выдавать в качестве награды!") end
+	
+	self:on_quit() -- Выходим из меню
 end
 
 -- Функция вывода в диалог сообщения о потере предмета (взял и модернизировал из news_manager.script)
@@ -246,6 +261,7 @@ function yan_random_quest_wnd:get_item_num(item)
 end
 
 function count_item(npc, item)
+	--log1(item)
 	if item:section() == item_name then count = count + 1 end
 end
 
@@ -258,7 +274,7 @@ end
 
 function delete_item(npc, item)
 	if item:section() == item_name and count<num then
-		--log1("Insert item "..item:section().." with id "..item:id())
+		log1("Insert item "..item:section().." with id "..item:id())
 		table.insert(delete_table, item)
 		count = count + 1
 	end
