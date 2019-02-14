@@ -13,8 +13,6 @@ function attach(sm)
 end
 
 
-local gps_wnd
-
 dropped_to_box = 0
 
 function on_item_drop(obj)
@@ -29,7 +27,7 @@ function on_item_drop(obj)
 				return not obj:parent() or not obj:parent():is_actor()
 			end,
 			function()
-				if not gps_wnd then
+				if not level.main_input_receiver() then
 					level.start_stop_menu(setup_gps_beacon(obj:id()), true) -- ставим метку
 				end
 			end
@@ -55,7 +53,6 @@ function setup_gps_beacon:__init(gps_obj_id) super()
 	self.gps_obj_id = gps_obj_id
 	self:InitControls()
 	self:InitCallBacks()
-	gps_wnd = self
 	self:SetWindowName("gps_metka")
 	
 	--log1("--setup_gps_beacon:__init")
@@ -91,8 +88,8 @@ end
 
 function setup_gps_beacon:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback( "btn_set_gps", ui_events.BUTTON_CLICKED, self.set_gps )
-	self:AddCallback( "btn_quit", ui_events.BUTTON_CLICKED, self.on_quit )
+	self:AddCallback( "btn_set_gps", ui_events.BUTTON_CLICKED, self.set_gps, self )
+	self:AddCallback( "btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self )
 end
 function setup_gps_beacon:Update()
 	CUIScriptWnd.Update(self)
@@ -114,11 +111,11 @@ function setup_gps_beacon:OnKeyboard(dik, keyboard_action)
 end
 
 function setup_gps_beacon:set_gps()
-	level.map_add_object_spot_ser( gps_wnd.gps_obj_id, "red_location", "%c[red]"..gps_wnd.edit_box:GetText() )
-	gps_wnd:on_quit()
+	level.map_add_object_spot_ser( self.gps_obj_id, "red_location", "%c[red]"..self.edit_box:GetText() )
+	self:on_quit()
 end
 
 function setup_gps_beacon:on_quit()
-	gps_wnd:GetHolder():start_stop_menu(gps_wnd, true)
-	gps_wnd = nil
+	self:GetHolder():start_stop_menu(self, true)
+	self:ClearCallbacks()
 end

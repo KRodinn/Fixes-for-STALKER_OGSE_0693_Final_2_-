@@ -613,11 +613,9 @@ end
 -- потом активизировать с помощью level.start_stop_menu
 -- контрол исчезает при нажатии ESC или любой из кнопок отмены
 -- при нажатии на установку контрол скрывается и выполняется действие по установке аддона
-local adc_wnd
 class "addon_control" (CUIScriptWnd)
 
 function addon_control:__init(slot_1_actions, slot_2_actions, sfake_addon) super()
-	adc_wnd = self
 	self.sfake_addon = sfake_addon
 	
 	self.xml = CScriptXmlInit()
@@ -636,7 +634,7 @@ end
 function addon_control:create_button(template, action, slot)
 	local btn = self.xml:Init3tButton(template, self)
 	self:Register(btn,template)
-	self:Connect(template, ui_events.BUTTON_CLICKED, action, nil, slot)
+	self:Connect(template, ui_events.BUTTON_CLICKED, action, self, slot)
 	return btn
 end
 
@@ -657,20 +655,20 @@ function addon_control:setup_slot_buttons(slot, available_actions, install_fun, 
 end
 
 function addon_control:close()
-	level.start_stop_menu(adc_wnd, false)
-	adc_wnd = nil -- отпускаем объект для сборщика мусора
+	level.start_stop_menu(self, false)
+	self:ClearCallbacks()
 end
 
 function addon_control:take_to_slot(slot)
-	convert_addon_to_slot(adc_wnd.sfake_addon, slot)
-	adc_wnd:close()
+	convert_addon_to_slot(self.sfake_addon, slot)
+	self:close()
 end
 
 function addon_control:install_to_slot(slot)
 	local wpn = db.actor:item_in_slot(slot)
 	ASSERT(wpn, "addon_control:btn_a1_action: slot "..slot.." is empty!")
-	install_remove_addon(wpn, adc_wnd.sfake_addon)
-	adc_wnd:close()
+	install_remove_addon(wpn, self.sfake_addon)
+	self:close()
 end
 
 function addon_control:OnKeyboard(dik, key_act) CUIScriptWnd.OnKeyboard(self,dik,key_act)

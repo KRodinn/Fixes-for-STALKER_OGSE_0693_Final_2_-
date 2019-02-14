@@ -4,13 +4,9 @@ function attach(sm)
 	sm:subscribe({signal = "on_key_down", fun = this.on_key_down})
 end
 
-local changer
-
 function on_key_down(key, bind)
-	if GetAlt() and key == DIK_keys.DIK_NUMPADENTER then
-		if not changer then
-			level.start_stop_menu(mobile_changer(), true)
-		end
+	if GetAlt() and key == DIK_keys.DIK_NUMPADENTER and not level.main_input_receiver() then
+		level.start_stop_menu(mobile_changer(), true)
 		return true
 	end
 end
@@ -135,7 +131,6 @@ function mobile_changer:__init() super()
 	--
 	self:update_locations_format()
 	--
-	changer = self
 	local xml = CScriptXmlInit()
 -----------------------------------------
 -- интерфейс
@@ -524,6 +519,5 @@ function mobile_changer:on_quit()
 	--
 	self:GetHolder():start_stop_menu(self,true)
 	--
-	changer = nil
 	self:ClearCallbacks()
 end

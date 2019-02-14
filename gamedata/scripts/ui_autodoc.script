@@ -17,10 +17,9 @@ function open_autodoc_ui()
 	level.start_stop_menu(spwn,true)
 end
 
-local autodoc_wnd
+
 class "autodoc" (CUIScriptWnd)
 function autodoc:__init() super()
-	autodoc_wnd = self
 	self.ui_bars = {}
 
 	self:InitLuaXml()
@@ -247,7 +246,7 @@ end
 function autodoc:on_quit()
 	ogse_autodoc.save_autodoc_states()
 	self:GetHolder():start_stop_menu(self,true)
-	autodoc_wnd = nil
+	self:ClearCallbacks()
 end
 
 function autodoc:OnKeyboard(dik, keyboard_action)

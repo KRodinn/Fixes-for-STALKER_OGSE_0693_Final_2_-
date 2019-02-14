@@ -1,9 +1,7 @@
 -- -*- mode: lua; coding: windows-1251-dos -*-
 
-local sleep_wnd
 class "sleep" (CUIScriptWnd)
 function sleep:__init() super()
-	sleep_wnd = self
 	local xml = CScriptXmlInit()
 	xml:ParseFile("ui_sleep_dialog_wnd.xml")
 	xml:InitWindow("main", 0, self)
@@ -38,12 +36,12 @@ function sleep:__init() super()
 			local btn = xml:Init3tButton("main:sleep_btn", self)
 			btn:SetWndPos(215 + t*24, 298)
 			self:Register(btn,"sleep_btn_"..i)
-			self:Connect( "sleep_btn_"..i, ui_events.BUTTON_CLICKED, self.on_hour_btn_click, nil, t )
+			self:Connect( "sleep_btn_"..i, ui_events.BUTTON_CLICKED, self.on_hour_btn_click, self, t )
 		end
 	end
 	self:Register(xml:Init3tButton("main:caption_1", self),"caption_1")
 	self:Register(xml:Init3tButton("main:btn_cancel", self),"btn_cancel")
-	self:AddCallback("btn_cancel", 	ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_cancel", 	ui_events.BUTTON_CLICKED, self.on_quit, self)
 	--log1("--sleep:__init()")
 end
 function sleep:__finalize()
@@ -62,10 +60,10 @@ end
 
 function sleep:on_hour_btn_click( h )
 	ogse_sleep_mgr.begin_sleep( h )
-	sleep_wnd:on_quit()
+	self:on_quit()
 end
 
 function sleep:on_quit()
-	sleep_wnd:GetHolder():start_stop_menu(sleep_wnd, true)
-	sleep_wnd = nil
+	self:GetHolder():start_stop_menu(self, true)
+	self:ClearCallbacks()
 end
