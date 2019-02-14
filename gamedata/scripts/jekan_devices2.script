@@ -11,21 +11,20 @@
 ----------------------------------------------------------------------------------------------------
 
 function cheb1_1()
-	local spwn = cheb_1_1()
+	local spwn = cheb_1_1(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_1_1_wnd
 class "cheb_1_1" (CUIScriptWnd)
-function cheb_1_1:__init() super()
-	cheb_1_1_wnd = self
+
+function cheb_1_1:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_1_1:__init()")
 end
-function cheb_1_1:__finalize()
-	--log1("~~cheb_1_1:__finalize()")
-end
+
+function cheb_1_1:__finalize() end
 
 function cheb_1_1:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -67,46 +66,45 @@ end
 
 function cheb_1_1:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_1_1:btn1()
-	cheb_1_1_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb1_2()
 end
 
 function cheb_1_1:btn2()
-	cheb_1_1_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb1_3()
 end
 
 function cheb_1_1:on_quit()
-	cheb_1_1_wnd:GetHolder():start_stop_menu(cheb_1_1_wnd, true)
-	cheb_1_1_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_2()
-	local spwn = cheb_1_2()
+	local spwn = cheb_1_2(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_1_2_wnd
 class "cheb_1_2" (CUIScriptWnd)
-function cheb_1_2:__init() super()
-	cheb_1_2_wnd = self
+
+function cheb_1_2:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_1_2:__init()")
 end
-function cheb_1_2:__finalize()
-	--log1("~~cheb_1_2:__finalize()")
-end
+
+function cheb_1_2:__finalize() end
 
 function cheb_1_2:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -148,46 +146,45 @@ end
 
 function cheb_1_2:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_1_2:btn1()
-	cheb_1_2_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb1_4()
 end
 
 function cheb_1_2:btn2()
-	cheb_1_2_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb1_5()
 end
 
 function cheb_1_2:on_quit()
-	cheb_1_2_wnd:GetHolder():start_stop_menu(cheb_1_2_wnd, true)
-	cheb_1_2_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_3()
-	local spwn = cheb_1_3()
-	level.start_stop_menu(spwn, true)
+	local spwn = cheb_1_3(get_hud())
+	level.start_stop_menu(spwn,true)
 end
 
-local cheb_1_3_wnd
 class "cheb_1_3" (CUIScriptWnd)
-function cheb_1_3:__init() super()
-	cheb_1_3_wnd = self
+
+function cheb_1_3:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_1_3:__init()")
 end
-function cheb_1_3:__finalize()
-	--log1("~~cheb_1_3:__finalize()")
-end
+
+function cheb_1_3:__finalize() end
 
 function cheb_1_3:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -224,39 +221,38 @@ end
 
 function cheb_1_3:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_1_3:btn1()
-	cheb_1_3_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb1_5()
 end
 
 function cheb_1_3:on_quit()
-	cheb_1_3_wnd:GetHolder():start_stop_menu(cheb_1_3_wnd, true)
-	cheb_1_3_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_4()
-	local spwn = cheb_1_4()
+	local spwn = cheb_1_4(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_1_4_wnd
 class "cheb_1_4" (CUIScriptWnd)
-function cheb_1_4:__init() super()
-	cheb_1_4_wnd = self
+
+function cheb_1_4:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_1_4:__init()")
 end
-function cheb_1_4:__finalize()
-	--log1("~~cheb_1_4:__finalize()")
-end
+
+function cheb_1_4:__finalize() end
 
 function cheb_1_4:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -293,40 +289,39 @@ end
 
 function cheb_1_4:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_1_4:btn1()
-	cheb_1_4_wnd:on_quit()
-	ogse.remove_item_from_inventory(db.actor:object("cheb"), db.actor)
+	self:on_quit()
+	ogse.remove_item_from_inventory(db.actor:object("cheb"),actor)
 	db.actor:give_info_portion("cheb_dead")
 	soundtrack.cheb_dead()
 end
 
 function cheb_1_4:on_quit()
-	cheb_1_4_wnd:GetHolder():start_stop_menu(cheb_1_4_wnd, true)
-	cheb_1_4_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_5()
-	local spwn = cheb_1_5()
+	local spwn = cheb_1_5(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_1_5_wnd
 class "cheb_1_5" (CUIScriptWnd)
-function cheb_1_5:__init() super()
-	cheb_1_5_wnd = self
+
+function cheb_1_5:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_1_5:__init()")
 end
-function cheb_1_5:__finalize()
-	--log1("~~cheb_1_5:__finalize()")
-end
+
+function cheb_1_5:__finalize() end
 
 function cheb_1_5:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -363,39 +358,38 @@ end
 
 function cheb_1_5:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_1_5:btn1()
-	cheb_1_5_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb1_6()
 end
 
 function cheb_1_5:on_quit()
-	cheb_1_5_wnd:GetHolder():start_stop_menu(cheb_1_5_wnd, true)
-	cheb_1_5_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_6()
-	local spwn = cheb_1_6()
+	local spwn = cheb_1_6(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_1_6_wnd
 class "cheb_1_6" (CUIScriptWnd)
-function cheb_1_6:__init() super()
-	cheb_1_6_wnd = self
+
+function cheb_1_6:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_1_6:__init()")
 end
-function cheb_1_6:__finalize()
-	--log1("~~cheb_1_6:__finalize()")
-end
+
+function cheb_1_6:__finalize() end
 
 function cheb_1_6:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -432,39 +426,38 @@ end
 
 function cheb_1_6:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_1_6:btn1()
-	cheb_1_6_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb1_7()
 end
 
 function cheb_1_6:on_quit()
-	cheb_1_6_wnd:GetHolder():start_stop_menu(cheb_1_6_wnd, true)
-	cheb_1_6_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_7()
-	local spwn = cheb_1_7()
-	level.start_stop_menu(spwn, true)
+	local spwn = cheb_1_7(get_hud())
+	level.start_stop_menu(spwn,true)
 end
 
-local cheb_1_7_wnd
 class "cheb_1_7" (CUIScriptWnd)
-function cheb_1_7:__init() super()
-	cheb_1_7_wnd = self
+
+function cheb_1_7:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_1_7:__init()")
 end
-function cheb_1_7:__finalize()
-	--log1("~~cheb_1_7:__finalize()")
-end
+
+function cheb_1_7:__finalize() end
 
 function cheb_1_7:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -501,40 +494,39 @@ end
 
 function cheb_1_7:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_1_7:btn1()
-	cheb_1_7_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 --	jekan_work.spawn_hvost()
 	db.actor:give_info_portion ("cheb_task1")
 end
 
 function cheb_1_7:on_quit()
-	cheb_1_7_wnd:GetHolder():start_stop_menu(cheb_1_7_wnd, true)
-	cheb_1_7_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_1()
-	local spwn = cheb_2_1()
-	level.start_stop_menu(spwn, true)
+	local spwn = cheb_2_1(get_hud())
+	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_1_wnd
 class "cheb_2_1" (CUIScriptWnd)
-function cheb_2_1:__init() super()
-	cheb_2_1_wnd = self
+
+function cheb_2_1:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_1:__init()")
 end
-function cheb_2_1:__finalize()
-	--log1("~~cheb_2_1:__finalize()")
-end
+
+function cheb_2_1:__finalize() end
 
 function cheb_2_1:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -598,24 +590,24 @@ end
 
 function cheb_2_1:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.btn1)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
 	if db.actor:dont_has_info("cheb_found_kolya") then
-		self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.btn2)
+		self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2, self)
 	end
-	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.btn3)
-	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.btn4)
-	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED, self.btn5)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED,  self.btn3, self)
+	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED,  self.btn4, self)
+	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED,  self.btn5, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_1:btn1()
-	cheb_2_1_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_2()
 end
 
 function cheb_2_1:btn2()
-	cheb_2_1_wnd:on_quit()
+	self:on_quit()
 	if has_alife_info("cheb_task1") and db.actor:dont_has_info("cheb_task2") and db.actor:dont_has_info("cheb_task3") and db.actor:dont_has_info("cheb_task4") and db.actor:dont_has_info("cheb_task5") and db.actor:dont_has_info("cheb_task6") and db.actor:dont_has_info("cheb_task7") then
 		if db.actor:dont_has_info("cheb_found_kolya") then
 			soundtrack.cheb_talking()
@@ -653,7 +645,7 @@ function cheb_2_1:btn2()
 end
 
 function cheb_2_1:btn3()
-	cheb_2_1_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	if db.actor:has_info("cheb_busy_story") and db.actor:has_info("cheb_busy_guidance") then
 		cheb2_4_11()
@@ -663,40 +655,44 @@ function cheb_2_1:btn3()
 end
 
 function cheb_2_1:btn4()
-	cheb_2_1_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_5()
 end
 
 function cheb_2_1:btn5()
-	cheb_2_1_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_6()
 end
 
+-- function cheb_2_1:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_1:on_quit()
-	cheb_2_1_wnd:GetHolder():start_stop_menu(cheb_2_1_wnd, true)
-	cheb_2_1_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_2()
-	local spwn = cheb_2_2()
+	local spwn = cheb_2_2(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_2_wnd
 class "cheb_2_2" (CUIScriptWnd)
-function cheb_2_2:__init() super()
-	cheb_2_2_wnd = self
+
+function cheb_2_2:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_2:__init()")
 end
-function cheb_2_2:__finalize()
-	--log1("~~cheb_2_2:__finalize()")
-end
+
+function cheb_2_2:__finalize() end
 
 function cheb_2_2:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -732,39 +728,43 @@ end
 
 function cheb_2_2:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_2:btn1()
-	cheb_2_2_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_2:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_2:on_quit()
-	cheb_2_2_wnd:GetHolder():start_stop_menu(cheb_2_2_wnd, true)
-	cheb_2_2_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_1()
-	local spwn = cheb_2_3_1()
+	local spwn = cheb_2_3_1(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_3_1_wnd
 class "cheb_2_3_1" (CUIScriptWnd)
-function cheb_2_3_1:__init() super()
-	cheb_2_3_1_wnd = self
+
+function cheb_2_3_1:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_3_1:__init()")
 end
-function cheb_2_3_1:__finalize()
-	--log1("~~cheb_2_3_1:__finalize()")
-end
+
+function cheb_2_3_1:__finalize() end
 
 function cheb_2_3_1:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -804,39 +804,43 @@ end
 
 function cheb_2_3_1:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_3_1:btn1()
-	cheb_2_3_1_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_3_1:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_3_1:on_quit()
-	cheb_2_3_1_wnd:GetHolder():start_stop_menu(cheb_2_3_1_wnd, true)
-	cheb_2_3_1_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_2()
-	local spwn = cheb_2_3_2()
+	local spwn = cheb_2_3_2(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_3_2_wnd
 class "cheb_2_3_2" (CUIScriptWnd)
-function cheb_2_3_2:__init() super()
-	cheb_2_3_2_wnd = self
+
+function cheb_2_3_2:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_3_2:__init()")
 end
-function cheb_2_3_2:__finalize()
-	--log1("~~cheb_2_3_2:__finalize()")
-end
+
+function cheb_2_3_2:__finalize() end
 
 function cheb_2_3_2:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -872,39 +876,43 @@ end
 
 function cheb_2_3_2:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_3_2:btn1()
-	cheb_2_3_2_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_3_2:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_3_2:on_quit()
-	cheb_2_3_2_wnd:GetHolder():start_stop_menu(cheb_2_3_2_wnd,true)
-	cheb_2_3_2_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_3()
-	local spwn = cheb_2_3_3()
+	local spwn = cheb_2_3_3(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_3_3_wnd
 class "cheb_2_3_3" (CUIScriptWnd)
-function cheb_2_3_3:__init() super()
-	cheb_2_3_3_wnd = self
+
+function cheb_2_3_3:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_3_3:__init()")
 end
-function cheb_2_3_3:__finalize()
-	--log1("~~cheb_2_3_3:__finalize()")
-end
+
+function cheb_2_3_3:__finalize() end
 
 function cheb_2_3_3:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -940,39 +948,43 @@ end
 
 function cheb_2_3_3:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_3_3:btn1()
-	cheb_2_3_3_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_3_3:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_3_3:on_quit()
-	cheb_2_3_3_wnd:GetHolder():start_stop_menu(cheb_2_3_3_wnd, true)
-	cheb_2_3_3_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_4()
-	local spwn = cheb_2_3_4()
+	local spwn = cheb_2_3_4(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_3_4_wnd
 class "cheb_2_3_4" (CUIScriptWnd)
-function cheb_2_3_4:__init() super()
-	cheb_2_3_4_wnd = self
+
+function cheb_2_3_4:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_3_4:__init()")
 end
-function cheb_2_3_4:__finalize()
-	--log1("~~cheb_2_3_4:__finalize()")
-end
+
+function cheb_2_3_4:__finalize() end
 
 function cheb_2_3_4:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1008,39 +1020,43 @@ end
 
 function cheb_2_3_4:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_3_4:btn1()
-	cheb_2_3_4_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_3_4:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_3_4:on_quit()
-	cheb_2_3_4_wnd:GetHolder():start_stop_menu(cheb_2_3_4_wnd, true)
-	cheb_2_3_4_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_5()
-	local spwn = cheb_2_3_5()
+	local spwn = cheb_2_3_5(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_3_5_wnd
 class "cheb_2_3_5" (CUIScriptWnd)
-function cheb_2_3_5:__init() super()
-	cheb_2_3_5_wnd = self
+
+function cheb_2_3_5:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_3_5:__init()")
 end
-function cheb_2_3_5:__finalize()
-	--log1("~~cheb_2_3_5:__finalize()")
-end
+
+function cheb_2_3_5:__finalize() end
 
 function cheb_2_3_5:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1076,39 +1092,43 @@ end
 
 function cheb_2_3_5:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_3_5:btn1()
-	cheb_2_3_5_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_3_5:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_3_5:on_quit()
-	cheb_2_3_5_wnd:GetHolder():start_stop_menu(cheb_2_3_5_wnd, true)
-	cheb_2_3_5_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_6()
-	local spwn = cheb_2_3_6()
+	local spwn = cheb_2_3_6(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_3_6_wnd
 class "cheb_2_3_6" (CUIScriptWnd)
-function cheb_2_3_6:__init() super()
-	cheb_2_3_6_wnd = self
+
+function cheb_2_3_6:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_3_6:__init()")
 end
-function cheb_2_3_6:__finalize()
-	--log1("~~cheb_2_3_6:__finalize()")
-end
+
+function cheb_2_3_6:__finalize() end
 
 function cheb_2_3_6:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1144,39 +1164,43 @@ end
 
 function cheb_2_3_6:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_3_6:btn1()
-	cheb_2_3_6_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_3_6:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_3_6:on_quit()
-	cheb_2_3_6_wnd:GetHolder():start_stop_menu(cheb_2_3_6_wnd, true)
-	cheb_2_3_6_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_7()
-	local spwn = cheb_2_3_7()
+	local spwn = cheb_2_3_7(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_3_7_wnd
 class "cheb_2_3_7" (CUIScriptWnd)
-function cheb_2_3_7:__init() super()
-	cheb_2_3_7_wnd = self
+
+function cheb_2_3_7:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_3_7:__init()")
 end
-function cheb_2_3_7:__finalize()
-	--log1("~~cheb_2_3_7:__finalize()")
-end
+
+function cheb_2_3_7:__finalize() end
 
 function cheb_2_3_7:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1212,39 +1236,43 @@ end
 
 function cheb_2_3_7:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_3_7:btn1()
-	cheb_2_3_7_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_3_7:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_3_7:on_quit()
-	cheb_2_3_7_wnd:GetHolder():start_stop_menu(cheb_2_3_7_wnd, true)
-	cheb_2_3_7_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_8()
-	local spwn = cheb_2_3_8()
+	local spwn = cheb_2_3_8(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_3_8_wnd
 class "cheb_2_3_8" (CUIScriptWnd)
-function cheb_2_3_8:__init() super()
-	cheb_2_3_8_wnd = self
+
+function cheb_2_3_8:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_3_8:__init()")
 end
-function cheb_2_3_8:__finalize()
-	--log1("~~cheb_2_3_8:__finalize()")
-end
+
+function cheb_2_3_8:__finalize() end
 
 function cheb_2_3_8:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1280,39 +1308,43 @@ end
 
 function cheb_2_3_8:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_3_8:btn1()
-	cheb_2_3_8_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_3_8:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_3_8:on_quit()
-	cheb_2_3_8_wnd:GetHolder():start_stop_menu(cheb_2_3_8_wnd, true)
-	cheb_2_3_8_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_4()
-	local spwn = cheb_2_4()
+	local spwn = cheb_2_4(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_4_wnd
 class "cheb_2_4" (CUIScriptWnd)
-function cheb_2_4:__init() super()
-	cheb_2_4_wnd = self
+
+function cheb_2_4:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_4:__init()")
 end
-function cheb_2_4:__finalize()
-	--log1("~~cheb_2_4:__finalize()")
-end
+
+function cheb_2_4:__finalize() end
 
 function cheb_2_4:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1348,39 +1380,38 @@ end
 
 function cheb_2_4:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_4:btn1()
-	cheb_2_4_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_4a()
 end
 
 function cheb_2_4:on_quit()
-	cheb_2_4_wnd:GetHolder():start_stop_menu(cheb_2_4_wnd, true)
-	cheb_2_4_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_4a()
-	local spwn = cheb_2_4a()
+	local spwn = cheb_2_4a(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_4a_wnd
 class "cheb_2_4a" (CUIScriptWnd)
-function cheb_2_4a:__init() super()
-	cheb_2_4a_wnd = self
+
+function cheb_2_4a:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_4a:__init()")
 end
-function cheb_2_4a:__finalize()
-	--log1("~~cheb_2_4a:__finalize()")
-end
+
+function cheb_2_4a:__finalize() end
 
 function cheb_2_4a:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1448,38 +1479,38 @@ end
 
 function cheb_2_4a:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	if db.actor:dont_has_info("cheb_busy_guidance") then
-		self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	end
-	if db.actor:dont_has_info("cheb_busy_story") then
-		self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2)
-	end
---	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED,  self.btn3)
---	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED,  self.btn4)
-	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED,  self.btn5)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+if db.actor:dont_has_info("cheb_busy_guidance") then
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+end
+if db.actor:dont_has_info("cheb_busy_story") then
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2, self)
+end
+--	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED,  self.btn3, self)
+--	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED,  self.btn4, self)
+	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED,  self.btn5, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_4a:btn1()
-	cheb_2_4a_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	jekan_work.cheb_guidance()
 end
 
 function cheb_2_4a:btn2()
-	cheb_2_4a_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	jekan_work.cheb_guidance_story()
 end
 --[[
 function cheb_2_4a:btn3()
-	cheb_2_4a_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	news_manager.send_tip(db.actor, "cheb_surge_tip", nil, "chebur1", 5000, nil)
 end
 
 function cheb_2_4a:btn4()
-	cheb_2_4a_wnd:on_quit()
+	self:on_quit()
 	if db.actor:dont_has_info("cheb_levelhelp") then
 		soundtrack.cheb_talking()
 		jekan_work.cheb_level_help()
@@ -1490,34 +1521,33 @@ function cheb_2_4a:btn4()
 end
 ]]
 function cheb_2_4a:btn5()
-	cheb_2_4a_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
 function cheb_2_4a:on_quit()
-	cheb_2_4a_wnd:GetHolder():start_stop_menu(cheb_2_4a_wnd, true)
-	cheb_2_4a_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb_guidance(guidance_index)
-	local spwn = cheb_ui_guidance(guidance_index)
+	local spwn = cheb_ui_guidance(get_hud(), guidance_index)
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_guidance_wnd
 class "cheb_ui_guidance" (CUIScriptWnd)
-function cheb_ui_guidance:__init(guidance_index) super()
-	cheb_guidance_wnd = self
+
+function cheb_ui_guidance:__init(owner, guidance_index) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls(guidance_index)
 	self:InitCallBacks()
-	--log1("--cheb_ui_guidance:__init()")
 end
-function cheb_ui_guidance:__finalize()
-	--log1("~~cheb_ui_guidance:__finalize()")
-end
+
+function cheb_ui_guidance:__finalize() end
 
 function cheb_ui_guidance:InitControls(guidance_index)
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1554,40 +1584,39 @@ end
 
 function cheb_ui_guidance:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_ui_guidance:btn1()
-	cheb_guidance_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
 function cheb_ui_guidance:on_quit()
-	cheb_guidance_wnd:GetHolder():start_stop_menu(cheb_guidance_wnd, true)
-	cheb_guidance_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 
 -----------------------------------------------------------------------------------------------
 
 function cheb2_4_11()
-	local spwn = cheb_2_4_11()
+	local spwn = cheb_2_4_11(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_4_11_wnd
 class "cheb_2_4_11" (CUIScriptWnd)
-function cheb_2_4_11:__init() super()
-	cheb_2_4_11_wnd = self
+
+function cheb_2_4_11:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_4_11:__init()")
 end
-function cheb_2_4_11:__finalize()
-	--log1("~~cheb_2_4_11:__finalize()")
-end
+
+function cheb_2_4_11:__finalize() end
 
 function cheb_2_4_11:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1623,41 +1652,40 @@ end
 
 function cheb_2_4_11:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_4_11:btn1()
-	cheb_2_4_11_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
 function cheb_2_4_11:on_quit()
-	cheb_2_4_11_wnd:GetHolder():start_stop_menu(cheb_2_4_11_wnd, true)
-	cheb_2_4_11_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb_story(story)
-	local spwn = cheb_ui_story(story)
+	local spwn = cheb_ui_story(get_hud(), story)
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_ui_story_wnd
 class "cheb_ui_story" (CUIScriptWnd)
-function cheb_ui_story:__init(story) super()
-	cheb_ui_story_wnd = self
+
+function cheb_ui_story:__init(owner, story) super()
+	self.dlg = self
+	self.owner = owner
 	self.story = story
 	self.page = 1
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_ui_story:__init()")
 end
-function cheb_ui_story:__finalize()
-	--log1("~~cheb_ui_story:__finalize()")
-end
+
+function cheb_ui_story:__finalize() end
 
 function cheb_ui_story:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1695,24 +1723,24 @@ end
 
 function cheb_ui_story:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_ui_story:btn1()
-	local story_ended, text = cheb_ui_story_wnd:next_page()
+	local story_ended, text = self:next_page()
 	if story_ended then
-		cheb_ui_story_wnd:on_quit()
+		self:on_quit()
 		cheb2_1()
 	else
-		cheb_ui_story_wnd.page = cheb_ui_story_wnd.page + 1
-		cheb_ui_story_wnd:show_page()
+		self.page = self.page + 1
+		self:show_page()
 	end
 end
 
 function cheb_ui_story:on_quit()
-	cheb_ui_story_wnd:GetHolder():start_stop_menu(cheb_ui_story_wnd, true)
-	cheb_ui_story_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 
@@ -1741,21 +1769,20 @@ end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_5()
-	local spwn = cheb_2_5()
+	local spwn = cheb_2_5(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_5_wnd
 class "cheb_2_5" (CUIScriptWnd)
-function cheb_2_5:__init() super()
-	cheb_2_5_wnd = self
+
+function cheb_2_5:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_5:__init()")
 end
-function cheb_2_5:__finalize()
-	--log1("~~cheb_2_5:__finalize()")
-end
+
+function cheb_2_5:__finalize() end
 
 function cheb_2_5:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1777,11 +1804,34 @@ function cheb_2_5:InitControls()
 	-- фразы персонажа
 	xml:InitStatic("cheb_talking1", self)
 
-	for i=1, 9 do
-		self["btn_"..i] = xml:Init3tButton("btn_"..i, self)
-		self:Register(self["btn_"..i], "btn_"..i)
-		self["btn_"..i]:Enable(false)
-	end
+	-- кнопка 1
+	self.btn_1 = xml:Init3tButton("btn_1", self)
+	self:Register(self.btn_1, "btn_1")
+	self.btn_1:Enable(false)
+	self.btn_2 = xml:Init3tButton("btn_2", self)
+	self:Register(self.btn_2, "btn_2")
+	self.btn_2:Enable(false)
+	self.btn_3 = xml:Init3tButton("btn_3", self)
+	self:Register(self.btn_3, "btn_3")
+	self.btn_3:Enable(false)
+	self.btn_4 = xml:Init3tButton("btn_4", self)
+	self:Register(self.btn_4, "btn_4")
+	self.btn_4:Enable(false)
+	self.btn_5 = xml:Init3tButton("btn_5", self)
+	self:Register(self.btn_5, "btn_5")
+	self.btn_5:Enable(false)
+	self.btn_6 = xml:Init3tButton("btn_6", self)
+	self:Register(self.btn_6, "btn_6")
+	self.btn_6:Enable(false)
+	self.btn_7 = xml:Init3tButton("btn_7", self)
+	self:Register(self.btn_7, "btn_7")
+	self.btn_7:Enable(false)
+	self.btn_8 = xml:Init3tButton("btn_8", self)
+	self:Register(self.btn_8, "btn_8")
+	self.btn_8:Enable(false)
+	self.btn_9 = xml:Init3tButton("btn_9", self)
+	self:Register(self.btn_9, "btn_9")
+	self.btn_9:Enable(false)
 
 	-- кнопка офф
 	self:Register(xml:Init3tButton("btn_quit", self),"btn_quit")
@@ -1818,20 +1868,68 @@ end
 
 function cheb_2_5:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	local function sqt(...)
-		this.show_quest_tip(...)
-		soundtrack.cheb_talking()
-		cheb_2_5_wnd:on_quit()
-	end
-	for i=1, 8 do
-		self:Connect("btn_"..i, ui_events.BUTTON_CLICKED, sqt, "cheb_2_5_"..i.."_0", "cheb_2_5_"..i.."_1")
-	end
-	self:AddCallback("btn_9", ui_events.BUTTON_CLICKED,  self.btn9)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2, self)
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED,  self.btn3, self)
+	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED,  self.btn4, self)
+	self:AddCallback("btn_5", ui_events.BUTTON_CLICKED,  self.btn5, self)
+	self:AddCallback("btn_6", ui_events.BUTTON_CLICKED,  self.btn6, self)
+	self:AddCallback("btn_7", ui_events.BUTTON_CLICKED,  self.btn7, self)
+	self:AddCallback("btn_8", ui_events.BUTTON_CLICKED,  self.btn8, self)
+	self:AddCallback("btn_9", ui_events.BUTTON_CLICKED,  self.btn9, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
+end
+
+function cheb_2_5:btn1()
+	self:on_quit()
+	soundtrack.cheb_talking()
+	show_quest_tip("cheb_2_5_1_0", "cheb_2_5_1_1")
+end
+
+function cheb_2_5:btn2()
+	self:on_quit()
+	soundtrack.cheb_talking()
+	show_quest_tip("cheb_2_5_2_0", "cheb_2_5_2_1")
+end
+
+function cheb_2_5:btn3()
+	self:on_quit()
+	soundtrack.cheb_talking()
+	show_quest_tip("cheb_2_5_3_0", "cheb_2_5_3_1")
+end
+
+function cheb_2_5:btn4()
+	self:on_quit()
+	soundtrack.cheb_talking()
+	show_quest_tip("cheb_2_5_4_0", "cheb_2_5_4_1")
+end
+
+function cheb_2_5:btn5()
+	self:on_quit()
+	soundtrack.cheb_talking()
+	show_quest_tip("cheb_2_5_5_0", "cheb_2_5_5_1")
+end
+
+function cheb_2_5:btn6()
+	self:on_quit()
+	soundtrack.cheb_talking()
+	show_quest_tip("cheb_2_5_6_0", "cheb_2_5_6_1")
+end
+
+function cheb_2_5:btn7()
+	self:on_quit()
+	soundtrack.cheb_talking()
+	show_quest_tip("cheb_2_5_7_0", "cheb_2_5_7_1")
+end
+
+function cheb_2_5:btn8()
+	self:on_quit()
+	soundtrack.cheb_talking()
+	show_quest_tip("cheb_2_5_8_0", "cheb_2_5_8_1")
 end
 
 function cheb_2_5:btn9()
-	cheb_2_5_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	local tips = ""
 	if db.actor:dont_has_info("dead_stalker_question_of_immortality_get_muten") then
@@ -1862,29 +1960,28 @@ function cheb_2_5:btn9()
 end
 
 function cheb_2_5:on_quit()
-	cheb_2_5_wnd:GetHolder():start_stop_menu(cheb_2_5_wnd, true)
-	cheb_2_5_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 
 -----------------------------------------------------------------------------------------------
 
 function show_quest_tip(tip, answer)
-	local spwn = cheb_quest_tip(tip, answer)
-	level.start_stop_menu(spwn, true)
+	local spwn = cheb_quest_tip(get_hud(), tip, answer)
+	level.start_stop_menu(spwn,true)
 end
 
-local cheb_quest_tip_wnd
 class "cheb_quest_tip" (CUIScriptWnd)
-function cheb_quest_tip:__init(...) super()
-	cheb_quest_tip_wnd = self
-	self:InitControls(...)
+
+function cheb_quest_tip:__init(owner, tip, answer) super()
+	self.dlg = self
+	self.owner = owner
+	self:InitControls(tip, answer)
 	self:InitCallBacks()
-	--log1("--cheb_quest_tip:__init(...)")
 end
-function cheb_quest_tip:__finalize()
-	--log1("~~cheb_quest_tip:__finalize()")
-end
+
+function cheb_quest_tip:__finalize() end
 
 function cheb_quest_tip:InitControls(tip, answer)
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1921,40 +2018,39 @@ end
 
 function cheb_quest_tip:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_quest_tip:btn1()
-	cheb_quest_tip_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
 function cheb_quest_tip:on_quit()
-	cheb_quest_tip_wnd:GetHolder():start_stop_menu(cheb_quest_tip_wnd, true)
-	cheb_quest_tip_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 
 -----------------------------------------------------------------------------------------------
 
 function cheb2_6()
-	local spwn = cheb_2_6()
+	local spwn = cheb_2_6(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_6_wnd
 class "cheb_2_6" (CUIScriptWnd)
-function cheb_2_6:__init() super()
-	cheb_2_6_wnd = self
+
+function cheb_2_6:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_6:__init()")
 end
-function cheb_2_6:__finalize()
-	--log1("~~cheb_2_6:__finalize()")
-end
+
+function cheb_2_6:__finalize() end
 
 function cheb_2_6:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -1992,12 +2088,12 @@ end
 
 function cheb_2_6:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_6:btn1()
-	cheb_2_6_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	-- cheb2_1()
 	db.actor:give_info_portion("cheb_sleep")
@@ -2006,29 +2102,33 @@ function cheb_2_6:btn1()
 	end
 end
 
+-- function cheb_2_6:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_6:on_quit()
-	cheb_2_6_wnd:GetHolder():start_stop_menu(cheb_2_6_wnd, true)
-	cheb_2_6_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_7()
-	local spwn = cheb_2_7()
+	local spwn = cheb_2_7(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_2_7_wnd
 class "cheb_2_7" (CUIScriptWnd)
-function cheb_2_7:__init() super()
-	cheb_2_7_wnd = self
+
+function cheb_2_7:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_2_7:__init()")
 end
-function cheb_2_7:__finalize()
-	--log1("~~cheb_2_7:__finalize()")
-end
+
+function cheb_2_7:__finalize() end
 
 function cheb_2_7:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -2064,39 +2164,43 @@ end
 
 function cheb_2_7:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_2_7:btn1()
-	cheb_2_7_wnd:on_quit()
+	self:on_quit()
 	soundtrack.cheb_talking()
 	cheb2_1()
 end
 
+-- function cheb_2_7:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_2_7:on_quit()
-	cheb_2_7_wnd:GetHolder():start_stop_menu(cheb_2_7_wnd, true)
-	cheb_2_7_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb_help1()
-	local spwn = cheb_help_1()
+	local spwn = cheb_help_1(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_help_1_wnd
 class "cheb_help_1" (CUIScriptWnd)
-function cheb_help_1:__init() super()
-	cheb_help_1_wnd = self
+
+function cheb_help_1:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_help_1:__init()")
 end
-function cheb_help_1:__finalize()
-	--log1("~~cheb_help_1:__finalize()")
-end
+
+function cheb_help_1:__finalize() end
 
 function cheb_help_1:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -2134,38 +2238,42 @@ end
 
 function cheb_help_1:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_help_1:btn1()
-	cheb_help_1_wnd:on_quit()
+	self:on_quit()
 	cheb2_1()
 end
 
+-- function cheb_help_1:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_help_1:on_quit()
-	cheb_help_1_wnd:GetHolder():start_stop_menu(cheb_help_1_wnd, true)
-	cheb_help_1_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb_help2()
-	local spwn = cheb_help_2()
+	local spwn = cheb_help_2(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local cheb_help2_wnd
 class "cheb_help_2" (CUIScriptWnd)
-function cheb_help_2:__init() super()
-	cheb_help2_wnd = self
+
+function cheb_help_2:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
-	--log1("--cheb_help_2:__init()")
 end
-function cheb_help_2:__finalize()
-	--log1("~~cheb_help_2:__finalize()")
-end
+
+function cheb_help_2:__finalize() end
 
 function cheb_help_2:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -2202,21 +2310,29 @@ end
 
 function cheb_help_2:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
 function cheb_help_2:btn1()
-	cheb_help2_wnd:on_quit()
+	self:on_quit()
 	cheb2_1()
 end
 
+-- function cheb_help_2:on_quit()
+--	self:on_quit()
+--	soundtrack.cheb_talking()
+-- end
+
 function cheb_help_2:on_quit()
-	cheb_help2_wnd:GetHolder():start_stop_menu(cheb_help2_wnd, true)
-	cheb_help2_wnd = nil
+	self:GetHolder():start_stop_menu (self,true)
+	self.dlg = nil
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
+
+
+
 
 
 
@@ -2465,7 +2581,6 @@ function tower_box:Exit()
 end
 
 function tower_box:OnKeyboard(dik, keyboard_action)
-	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE then
 			self:unBind()
@@ -2489,19 +2604,20 @@ end
 
 -- Тайник сержанта из Мертвого города ------------------------------------------------------------------------------------------------------------------------------------------
 function city_tower_box()
-	local spwn = city_tower_box_1()
+	local spwn = city_tower_box_1(get_hud())
 	level.start_stop_menu(spwn,true)
 end
 
-local ctb_wnd
 class "city_tower_box_1" (CUIScriptWnd)
-function city_tower_box_1:__init() super()
-	ctb_wnd = self
+
+function city_tower_box_1:__init(owner) super()
+	self.dlg = self
+	self.owner = owner
 	self:InitControls()
 	self:InitCallBacks()
 end
-function city_tower_box_1:__finalize()
-end
+
+function city_tower_box_1:__finalize() end
 
 function city_tower_box_1:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -2530,21 +2646,22 @@ end
 
 function city_tower_box_1:InitCallBacks()
 	-- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1)
-	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED,  self.btn1, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED,  self.btn2, self)
 end
 
 function city_tower_box_1:btn1()
-	ctb_wnd:on_quit()
+	self:on_quit()
 	jekan_work.cit_tower_box_montirovka_open()
 end
 
 function city_tower_box_1:btn2()
-	ctb_wnd:on_quit()
+	self:on_quit()
 	jekan_work.cit_tower_box_keys_open()
 end
 
 function city_tower_box_1:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	ctb_wnd = nil
+	self.dlg = nil
 end
+-----------------------------------------------------------------------------------------------
