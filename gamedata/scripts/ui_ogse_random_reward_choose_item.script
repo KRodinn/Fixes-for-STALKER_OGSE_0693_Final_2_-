@@ -59,9 +59,7 @@ function select_actor_items:__finalize() end
 
 class "choose_item" (CUIScriptWnd)
 
-function choose_item:__init(owner, npc, task_name) super()
-	self.dlg = self
-	self.owner = owner
+function choose_item:__init(_, npc, task_name) super()
 	self.npc = npc
 	self.task_name = task_name
 	self.trader_name = self:get_trader_name(self.task_name)
@@ -74,7 +72,7 @@ end
 function choose_item:__finalize() end
 
 function random_reward_get_hud(npc, task_name)
-	local spwn = choose_item(get_hud(), npc, task_name)
+	local spwn = choose_item(nil, npc, task_name)
 	level.start_stop_menu(spwn,true)	
 end
 
@@ -194,7 +192,7 @@ end
 
 function choose_item:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 
 function choose_item:OnKeyboard(dik, keyboard_action)

@@ -156,6 +156,7 @@ end
 function ui_safe:unBind()
     ogse_signals.get_mgr():unsubscribe(self.sm_update)
 	self.sm_update = nil
+	self:ClearCallbacks()
 end
 
 function ui_safe:onUpdate()

@@ -40,14 +40,12 @@ end
 
 
 function open_radio_dialog()
-	local spwn = handradio(get_hud())
-	level.start_stop_menu(spwn,true)	
+	local spwn = handradio()
+	level.start_stop_menu(spwn, true)
 end
 
 class "handradio" (CUIScriptWnd)
-function handradio:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+function handradio:__init() super()
 	self:InitControls()
 	self:InitCallBacks()
 	self:SetWindowName("handradio")
@@ -197,9 +195,7 @@ function handradio:listen()
 		end
 		--]=]
 	end
-	spawn_radio_if_used()
-	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:on_quit()
 end
 
 function handradio:call_friend()
@@ -214,9 +210,7 @@ function handradio:call_friend()
 			end
 		end
 	end
-	spawn_radio_if_used()
-	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:on_quit()
 end
 
 function handradio:stay_friend()
@@ -231,9 +225,7 @@ function handradio:stay_friend()
 			end
 		end
 	end
-	spawn_radio_if_used()	
-	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:on_quit()
 end
 
 function handradio:hide_friend()
@@ -248,15 +240,13 @@ function handradio:hide_friend()
 			end
 		end
 	end
-	spawn_radio_if_used()	
-	self:GetHolder():start_stop_menu(self,true)
-	self.dlg = nil
+	self:on_quit()
 end
 
 function handradio:on_quit()
 	spawn_radio_if_used()
-	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:GetHolder():start_stop_menu(self, true)
+	self:ClearCallbacks()
 end
 
 function start_muten_radio_effect(sound_length, delay)

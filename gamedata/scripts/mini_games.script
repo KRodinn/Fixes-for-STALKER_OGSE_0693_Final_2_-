@@ -241,6 +241,7 @@ end
 function card_game_21p:on_quit()
 	self:Reset21()
 	self:GetHolder():start_stop_menu(self, true)
+	self:ClearCallbacks()
 end
 
 function card_game_21p:Reset21()
@@ -453,6 +454,7 @@ end
 function MGame_WhereBall:btn_quit()
 	self:Reset()
 	self:GetHolder():start_stop_menu(self, true)
+	self:ClearCallbacks()
 end
 
 function game_where_ball_start() 

@@ -22,7 +22,7 @@ function check_use_repair_kit(obj, sobj) --действие при запуск�
 	--if not obj or not sobj then return end
 
 	if obj:section() == "repair_kit" then
-		local spwn = remkit(get_hud())
+		local spwn = remkit()
 		level.start_stop_menu(spwn,true)
 		return true
 	end
@@ -114,9 +114,7 @@ rep_slot = 0 --ибо нефиг вызывать из db. Пусть тут б�
 
 class "remkit" (CUIScriptWnd)
 
-function remkit:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+function remkit:__init() super()
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -210,7 +208,7 @@ function remkit:cheat_main()
 			return
 		elseif self.remkit_sel == nil then
 			self.remkit_sel = repair_dialog()
-			self.remkit_sel.owner = self
+			--self.remkit_sel.owner = self --???
 		end
 		self:GetHolder():start_stop_menu(self.remkit_sel, true)
 		self:GetHolder():start_stop_menu(self, true)
@@ -248,13 +246,13 @@ function remkit:rep_trans()
 		play_repair_sound()
 	end
 	self:GetHolder():start_stop_menu(self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 --------------------------------------------------------------------
 function remkit:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
 	create_repair_kit() 
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 
 function remkit:OnMsgYes()
@@ -326,7 +324,6 @@ class "repair_dialog" (CUIScriptWnd)
 
 function repair_dialog:__init() super()
 	successful_repair = false
-	self.dlg = self
 	self:InitControls()
 	self:InitCallBacks()
 	self:FillList()
@@ -511,7 +508,7 @@ function repair_dialog:on_quit()
 	if not successful_repair then --если ремонт не удался, вернем ремкит в инвентарь.
 		create_repair_kit() 
 	end
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 
 function repair_dialog:OnMsgYes()

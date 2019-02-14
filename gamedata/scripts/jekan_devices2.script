@@ -11,15 +11,14 @@
 ----------------------------------------------------------------------------------------------------
 
 function cheb1_1()
-	local spwn = cheb_1_1(get_hud())
+	local spwn = cheb_1_1(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_1_1" (CUIScriptWnd)
 
 function cheb_1_1:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -85,21 +84,20 @@ end
 
 function cheb_1_1:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_2()
-	local spwn = cheb_1_2(get_hud())
+	local spwn = cheb_1_2(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_1_2" (CUIScriptWnd)
 
 function cheb_1_2:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -165,21 +163,20 @@ end
 
 function cheb_1_2:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_3()
-	local spwn = cheb_1_3(get_hud())
+	local spwn = cheb_1_3(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_1_3" (CUIScriptWnd)
 
 function cheb_1_3:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -233,21 +230,20 @@ end
 
 function cheb_1_3:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_4()
-	local spwn = cheb_1_4(get_hud())
+	local spwn = cheb_1_4(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_1_4" (CUIScriptWnd)
 
 function cheb_1_4:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -302,21 +298,20 @@ end
 
 function cheb_1_4:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_5()
-	local spwn = cheb_1_5(get_hud())
+	local spwn = cheb_1_5(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_1_5" (CUIScriptWnd)
 
 function cheb_1_5:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -370,21 +365,20 @@ end
 
 function cheb_1_5:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_6()
-	local spwn = cheb_1_6(get_hud())
+	local spwn = cheb_1_6(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_1_6" (CUIScriptWnd)
 
 function cheb_1_6:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -438,21 +432,20 @@ end
 
 function cheb_1_6:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb1_7()
-	local spwn = cheb_1_7(get_hud())
+	local spwn = cheb_1_7(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_1_7" (CUIScriptWnd)
 
 function cheb_1_7:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -507,21 +500,20 @@ end
 
 function cheb_1_7:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_1()
-	local spwn = cheb_2_1(get_hud())
+	local spwn = cheb_2_1(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_1" (CUIScriptWnd)
 
 function cheb_2_1:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -673,21 +665,20 @@ end
 
 function cheb_2_1:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_2()
-	local spwn = cheb_2_2(get_hud())
+	local spwn = cheb_2_2(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_2" (CUIScriptWnd)
 
 function cheb_2_2:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -745,21 +736,20 @@ end
 
 function cheb_2_2:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_1()
-	local spwn = cheb_2_3_1(get_hud())
+	local spwn = cheb_2_3_1(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_3_1" (CUIScriptWnd)
 
 function cheb_2_3_1:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -821,21 +811,20 @@ end
 
 function cheb_2_3_1:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_2()
-	local spwn = cheb_2_3_2(get_hud())
+	local spwn = cheb_2_3_2(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_3_2" (CUIScriptWnd)
 
 function cheb_2_3_2:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -893,21 +882,20 @@ end
 
 function cheb_2_3_2:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_3()
-	local spwn = cheb_2_3_3(get_hud())
+	local spwn = cheb_2_3_3(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_3_3" (CUIScriptWnd)
 
 function cheb_2_3_3:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -965,21 +953,20 @@ end
 
 function cheb_2_3_3:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_4()
-	local spwn = cheb_2_3_4(get_hud())
+	local spwn = cheb_2_3_4(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_3_4" (CUIScriptWnd)
 
 function cheb_2_3_4:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1037,21 +1024,20 @@ end
 
 function cheb_2_3_4:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_5()
-	local spwn = cheb_2_3_5(get_hud())
+	local spwn = cheb_2_3_5(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_3_5" (CUIScriptWnd)
 
 function cheb_2_3_5:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1109,21 +1095,20 @@ end
 
 function cheb_2_3_5:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_6()
-	local spwn = cheb_2_3_6(get_hud())
+	local spwn = cheb_2_3_6(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_3_6" (CUIScriptWnd)
 
 function cheb_2_3_6:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1181,21 +1166,20 @@ end
 
 function cheb_2_3_6:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_7()
-	local spwn = cheb_2_3_7(get_hud())
+	local spwn = cheb_2_3_7(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_3_7" (CUIScriptWnd)
 
 function cheb_2_3_7:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1253,21 +1237,20 @@ end
 
 function cheb_2_3_7:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_3_8()
-	local spwn = cheb_2_3_8(get_hud())
+	local spwn = cheb_2_3_8(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_3_8" (CUIScriptWnd)
 
 function cheb_2_3_8:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1325,21 +1308,20 @@ end
 
 function cheb_2_3_8:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_4()
-	local spwn = cheb_2_4(get_hud())
+	local spwn = cheb_2_4(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_4" (CUIScriptWnd)
 
 function cheb_2_4:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1392,21 +1374,20 @@ end
 
 function cheb_2_4:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_4a()
-	local spwn = cheb_2_4a(get_hud())
+	local spwn = cheb_2_4a(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_4a" (CUIScriptWnd)
 
 function cheb_2_4a:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1528,21 +1509,20 @@ end
 
 function cheb_2_4a:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb_guidance(guidance_index)
-	local spwn = cheb_ui_guidance(get_hud(), guidance_index)
+	local spwn = cheb_ui_guidance(nil, guidance_index)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_ui_guidance" (CUIScriptWnd)
 
 function cheb_ui_guidance:__init(owner, guidance_index) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls(guidance_index)
 	self:InitCallBacks()
 end
@@ -1596,22 +1576,21 @@ end
 
 function cheb_ui_guidance:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 
 -----------------------------------------------------------------------------------------------
 
 function cheb2_4_11()
-	local spwn = cheb_2_4_11(get_hud())
+	local spwn = cheb_2_4_11(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_4_11" (CUIScriptWnd)
 
 function cheb_2_4_11:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1664,21 +1643,20 @@ end
 
 function cheb_2_4_11:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb_story(story)
-	local spwn = cheb_ui_story(get_hud(), story)
+	local spwn = cheb_ui_story(nil, story)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_ui_story" (CUIScriptWnd)
 
 function cheb_ui_story:__init(owner, story) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self.story = story
 	self.page = 1
 	self:InitControls()
@@ -1740,7 +1718,7 @@ end
 
 function cheb_ui_story:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 
@@ -1769,15 +1747,14 @@ end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_5()
-	local spwn = cheb_2_5(get_hud())
+	local spwn = cheb_2_5(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_5" (CUIScriptWnd)
 
 function cheb_2_5:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -1961,22 +1938,21 @@ end
 
 function cheb_2_5:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 
 -----------------------------------------------------------------------------------------------
 
 function show_quest_tip(tip, answer)
-	local spwn = cheb_quest_tip(get_hud(), tip, answer)
+	local spwn = cheb_quest_tip(nil, tip, answer)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_quest_tip" (CUIScriptWnd)
 
 function cheb_quest_tip:__init(owner, tip, answer) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls(tip, answer)
 	self:InitCallBacks()
 end
@@ -2030,22 +2006,21 @@ end
 
 function cheb_quest_tip:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 
 -----------------------------------------------------------------------------------------------
 
 function cheb2_6()
-	local spwn = cheb_2_6(get_hud())
+	local spwn = cheb_2_6(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_6" (CUIScriptWnd)
 
 function cheb_2_6:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -2109,21 +2084,20 @@ end
 
 function cheb_2_6:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb2_7()
-	local spwn = cheb_2_7(get_hud())
+	local spwn = cheb_2_7(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_2_7" (CUIScriptWnd)
 
 function cheb_2_7:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -2181,21 +2155,20 @@ end
 
 function cheb_2_7:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb_help1()
-	local spwn = cheb_help_1(get_hud())
+	local spwn = cheb_help_1(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_help_1" (CUIScriptWnd)
 
 function cheb_help_1:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -2254,21 +2227,20 @@ end
 
 function cheb_help_1:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
 
 function cheb_help2()
-	local spwn = cheb_help_2(get_hud())
+	local spwn = cheb_help_2(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "cheb_help_2" (CUIScriptWnd)
 
 function cheb_help_2:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -2326,7 +2298,7 @@ end
 
 function cheb_help_2:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 	soundtrack.cheb_talking()
 end
 -----------------------------------------------------------------------------------------------
@@ -2374,6 +2346,7 @@ end
 function tower_box:unBind() -- вызывается при закрытии окна
     ogse_signals.get_mgr():unsubscribe(self.sm_update)
 	self.sm_update = nil
+	self:ClearCallbacks()
 end
 
 -- Dynamic XML -----------------------------------------------
@@ -2588,15 +2561,14 @@ end
 -- Тайник сержанта из Мертвого города ------------------------------------------------------------------------------------------------------------------------------------------
 
 function city_tower_box()
-	local spwn = city_tower_box_1(get_hud())
+	local spwn = city_tower_box_1(nil)
 	level.start_stop_menu(spwn,true)
 end
 
 class "city_tower_box_1" (CUIScriptWnd)
 
 function city_tower_box_1:__init(owner) super()
-	self.dlg = self
-	self.owner = owner
+	
 	self:InitControls()
 	self:InitCallBacks()
 end
@@ -2646,7 +2618,7 @@ end
 
 function city_tower_box_1:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 -----------------------------------------------------------------------------------------------
 

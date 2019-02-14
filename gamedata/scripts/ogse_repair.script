@@ -93,7 +93,6 @@ end
 class "repair_dialog" (CUIScriptWnd)
 
 function repair_dialog:__init() super()
-	self.dlg = self
 	self:InitControls()
 	self:InitCallBacks()
 	self:FillList()
@@ -413,7 +412,7 @@ end
 
 function repair_dialog:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 
 function repair_dialog:AddItemToList(item_num, item_name, item_cond)

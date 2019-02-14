@@ -10,7 +10,7 @@
 local money_koef = 1.75 -- Наценка на предмет, относительно базовой стоимости (cost) 
 
 function open_yan_random_quest_wnd(npc)
-	local spwn = yan_random_quest_wnd(get_hud(), npc)
+	local spwn = yan_random_quest_wnd(npc)
 	level.start_stop_menu(spwn,true)
 end
 
@@ -18,9 +18,7 @@ local delete_table = {} -- табличка под предметы, которые мы в будущем будем уда
 
 class "yan_random_quest_wnd" (CUIScriptWnd)
 
-function yan_random_quest_wnd:__init(owner, npc) super()
-	self.dlg = self
-	self.owner = owner
+function yan_random_quest_wnd:__init(npc) super()
 	self.npc = npc
 	self:InitControls()
 	self:InitCallBacks()
@@ -169,20 +167,19 @@ end
 -- Выход из меню
 function yan_random_quest_wnd:on_quit()
 	self:GetHolder():start_stop_menu (self,true)
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 
---[[
 -- CallBack на клавиатуру
 function yan_random_quest_wnd:OnKeyboard(dik, keyboard_action)
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE then
 			--self:transfer_items_to_npc()
+			self:ClearCallbacks()
 		end
 	end
 end
---]]
 
 -- Передача (удаление) вещей и выдача денег актору
 function yan_random_quest_wnd:transfer_items_to_npc()

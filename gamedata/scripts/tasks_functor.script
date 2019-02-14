@@ -209,11 +209,6 @@ function on_first_update()
 	on_first_update_chameleon()
 end
 
-local tActorItems = {}
-local function exp(...)
-	log1(string.format(...))
-end
-
 
 local wolf_pos = vector():set(-200.87, -20.04, -147.76)
 
@@ -992,7 +987,6 @@ end
 
 class "ui_neutralize_bomb" (CUIScriptWnd)
 function ui_neutralize_bomb:__init() super()
-	self.dlg = self
 	db.actor:give_info_portion("esc_bomb_ui")
 
 	local W, H = device().width,device().height
@@ -1071,7 +1065,7 @@ end
 
 function ui_neutralize_bomb:quit()
 	level.start_stop_menu(self, true)
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 
 function messege_of_sidor_a_kill_mercs()
@@ -2367,7 +2361,6 @@ end
 
 class "case_use_rub" (CUIScriptWnd)
 function case_use_rub:__init() super()
-	self.dlg = self
 	self:InitControls()
 	self:InitCallBacks()
 	self:SetWindowName("case_use_rub")
@@ -2428,7 +2421,7 @@ function case_use_rub:quit()
 		ogse.spawn_item_in_inv("case_use_rub")
 	end
 	self:GetHolder():start_stop_menu(self, true)
-	self.dlg = nil
+	self:ClearCallbacks()
 end
 
 function case_use_rub:OnKeyboard(dik, keyboard_action)
@@ -2440,33 +2433,6 @@ function case_use_rub:OnKeyboard(dik, keyboard_action)
 	end
 end
 
-class "GameMessege" (CUIScriptWnd)
-function GameMessege:__init(MessText, cap) super()
-    self:Init(360,300,650,212)
-	self.fon = CUIStatic()
-	self.fon:Init(-50,0,650,212)
-	self.fon:InitTexture("ui\\ui_trade_list_back")
-	self.fon:SetText(cap)
-	self.fon:SetTextX(15)
-	self.fon:SetTextY(10)
-	self.fon:SetTextAlign(0)
-	self:AttachChild (self.fon)
-	self.text = CUIStatic()
-	self.text:Init(-145,60,650,30)
-	self.text:SetText(MessText)
-	self.text:SetTextAlign(2)
-	self.fon:AttachChild (self.text)
-	self.btn = CUI3tButton ()
-	self.btn:Init("ui\\ui_btn_02", 150,150,45,26)
-	self.btn:SetText("OK")
-	self:Register(self.btn, "btn")
-	self:AddCallback("btn", ui_events.BUTTON_CLICKED, self.Btn_OK_GameMessege, self)
-	self.fon:AttachChild(self.btn)
-end
-
-function GameMessege:Btn_OK_GameMessege()
-    self:GetHolder():start_stop_menu(self, true)
-end
 
 function search_code2_meet_with_svyaznoi()
 	if db.actor and db.actor:position():distance_to_sqr(vector():set(-194.79,-13.0,37.92),130801,1657) < 11^2 then
@@ -2540,7 +2506,6 @@ class "ui_bun_comp" (CUIScriptWnd)
 function ui_bun_comp:__init() super()
 	self:InitControls()
 	self:InitCallBacks()
-	self.dlg = self
 	self:SetWindowName("ui_bun_comp")
 end
 
@@ -2578,16 +2543,16 @@ function ui_bun_comp:ok()
 	end
 end
 
-
 function ui_bun_comp:quit_ui_bun_comp()
 	self:GetHolder():start_stop_menu(self, true)
-	self.dlg = nil
+	self:ClearCallbacks()
 end
+
 function ui_bun_comp:OnKeyboard(dik, keyboard_action) --не тестил
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE  then
-			comp_wnd = nil
+			self:quit_ui_bun_comp()
 		end
 	end
 end
