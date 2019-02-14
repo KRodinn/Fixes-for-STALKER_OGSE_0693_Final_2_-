@@ -846,10 +846,7 @@ function CRandomTask:task_reward(npc, actor, p1, p2)
 				local rt = ogse_random_task_reward.random_task_reward(task_desc.parent, v)
 				
 				if rt.random_task_reward_accept == 1 and rt.difficult_list[v] then
-					dsh.wait_condition(
-						ui_ogse_random_reward_choose_item.random_reward_wnd_not_shown,
-						function() ui_ogse_random_reward_choose_item.random_reward_get_hud(npc, v) end
-					)
+					ui_ogse_random_reward_choose_item.random_reward_get_hud(npc, v)
 					task_desc.reward_money = nil
 					task_desc.reward_item = nil
 				end
