@@ -768,11 +768,8 @@ function ui_rukzak_our:InitControls( x, y, xml, handler )
 end
 
 
-local rkz_wnd
-
 class "ui_rukzak" ( CUIScriptWnd )
 function ui_rukzak:__init( obj ) super()
-  rkz_wnd = self
   self.changed = false
   self.index_other = {}
   self.index_our = {}
@@ -783,11 +780,8 @@ function ui_rukzak:__init( obj ) super()
   self:InitCallBacks()
   self:FillOtherList()
   self:FillOurList()
-  --log1("--ui_rukzak:__init()")
 end
-function ui_rukzak:__finalize()
-  --log1("~~ui_rukzak:__finalize()")
-end
+function ui_rukzak:__finalize() end
 
 
 function ui_rukzak:InitControls()
@@ -852,35 +846,37 @@ end
 
 
 function ui_rukzak:InitCallBacks()
-  self:AddCallback( "tab", ui_events.TAB_CHANGED, self.OnTabChange )
-  self:AddCallback( "btn_4", ui_events.BUTTON_CLICKED, self.rep_btn )
-  self:AddCallback( "btn_quit", ui_events.BUTTON_CLICKED, self.on_quit )
+  self:AddCallback( "tab", ui_events.TAB_CHANGED, self.OnTabChange, self )
+  self:AddCallback( "btn_4", ui_events.BUTTON_CLICKED, self.rep_btn, self )
+  self:AddCallback( "btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self )
   self:AddCallback(
-    "list_other", ui_events.LIST_ITEM_CLICKED, self.OnListItemClicked
+    "list_other", ui_events.LIST_ITEM_CLICKED, self.OnListItemClicked, self
   )
   self:AddCallback(
-    "list_other", ui_events.WINDOW_LBUTTON_DB_CLICK, self.rep_btn
+    "list_other", ui_events.WINDOW_LBUTTON_DB_CLICK, self.OnListItemDbClicked,
+    self
   )
   self:AddCallback(
-    "list_our", ui_events.LIST_ITEM_CLICKED, self.OnListItemClicked
+    "list_our", ui_events.LIST_ITEM_CLICKED, self.OnListItemClicked, self
   )
   self:AddCallback(
-    "list_our", ui_events.WINDOW_LBUTTON_DB_CLICK, self.rep_btn
+    "list_our", ui_events.WINDOW_LBUTTON_DB_CLICK, self.OnListItemDbClicked,
+    self
   )
   self:AddCallback(
-    "edit_amount", ui_events.EDIT_TEXT_COMMIT, self.rep_btn
+    "edit_amount", ui_events.EDIT_TEXT_COMMIT, self.rep_btn, self
   )
   self:AddCallback(
-    "edit_filter", ui_events.EDIT_TEXT_COMMIT, self.OnSearchEnter
+    "edit_filter", ui_events.EDIT_TEXT_COMMIT, self.OnSearchEnter, self
   )
   self:AddCallback(
-    "radio_show", ui_events.TAB_CHANGED, self.OnShowChange
+    "radio_show", ui_events.TAB_CHANGED, self.OnShowChange, self
   )
   self:AddCallback(
-    "radio_sort", ui_events.TAB_CHANGED, self.OnSortChange
+    "radio_sort", ui_events.TAB_CHANGED, self.OnSortChange, self
   )
   self:AddCallback(
-    "btn_move_all", ui_events.BUTTON_CLICKED, self.OnMoveAllClicked
+    "btn_move_all", ui_events.BUTTON_CLICKED, self.OnMoveAllClicked, self
   )
 end
 
@@ -898,31 +894,31 @@ end
 
 
 function ui_rukzak:OnTabChange()
-  rkz_wnd.dlg_other:Show( false )
-  rkz_wnd.dlg_our:Show( false )
-  local i = rkz_wnd.tab:GetActiveIndex()
+  self.dlg_other:Show( false )
+  self.dlg_our:Show( false )
+  local i = self.tab:GetActiveIndex()
   if     i == 0 then
-    rkz_wnd.dlg_other:Show( true )
+    self.dlg_other:Show( true )
   elseif i == 1 then
-    rkz_wnd.dlg_our:Show( true )
+    self.dlg_our:Show( true )
   end
-  rkz_wnd:reset_edit_amount()
-  rkz_wnd.btn_4:Enable( false )
-  rkz_wnd.btn_move_all:Enable( false )
+  self:reset_edit_amount()
+  self.btn_4:Enable( false )
+  self.btn_move_all:Enable( false )
 end
 
 
 function ui_rukzak:rep_btn()
-  local amount = tonumber( rkz_wnd.edit_amount:GetText() ) or 1
-  rkz_wnd:move_items( amount )
+  local amount = tonumber( self.edit_amount:GetText() ) or 1
+  self:move_items( amount )
 end
 
 
 function ui_rukzak:OnMoveAllClicked()
-  local ui_item = rkz_wnd:get_selected_item()
+  local ui_item = self:get_selected_item()
   if ui_item then
     local amount = tonumber( ui_item.item_cnt:GetText() ) or 1
-    rkz_wnd:move_items( amount )
+    self:move_items( amount )
   end
 end
 
@@ -1142,25 +1138,30 @@ end
 
 
 function ui_rukzak:on_quit()
-  if rkz_wnd.changed then
-    save_rukzak( rkz_wnd.owner_id, rkz_wnd.items_other )
+  if self.changed then
+    save_rukzak( self.owner_id, self.items_other )
   end
-  if rkz_wnd.weight_timer then rkz_wnd.weight_timer:stop() end
-  if not rkz_wnd.is_car then
+  if self.weight_timer then self.weight_timer:stop() end
+  if not self.is_car then
     sound_object( "interface\\inv_close" ):play( db.actor, 0, sound_object.s2d )
   end
-  rkz_wnd:GetHolder():start_stop_menu( rkz_wnd, true )
-  rkz_wnd = nil --Отпускаем окно рюкзака для сборщика мусора. Все объекты, ему принадлежащие, удалятся автоматически.
+  self:GetHolder():start_stop_menu( self, true )
+  self:ClearCallbacks()
 end
 
 
 function ui_rukzak:OnListItemClicked()
-  local item = rkz_wnd:get_selected_item()
+  local item = self:get_selected_item()
   if not item then return end
-  rkz_wnd:show_item_descr( item )
-  rkz_wnd:reset_edit_amount()
-  rkz_wnd.btn_4:Enable( true )
-  rkz_wnd.btn_move_all:Enable( true )
+  self:show_item_descr( item )
+  self:reset_edit_amount()
+  self.btn_4:Enable( true )
+  self.btn_move_all:Enable( true )
+end
+
+
+function ui_rukzak:OnListItemDbClicked()
+  self:rep_btn()
 end
 
 
@@ -1231,7 +1232,7 @@ end
 
 
 function ui_rukzak:OnSearchEnter()
-  rkz_wnd:show_filtered_items( true )
+  self:show_filtered_items( true )
 end
 
 
@@ -1306,9 +1307,9 @@ end
 
 
 function ui_rukzak:OnShowChange()
-  rkz_wnd.filtered_other = nil
-  rkz_wnd.filtered_our   = nil
-  rkz_wnd:show_filtered_items()
+  self.filtered_other = nil
+  self.filtered_our   = nil
+  self:show_filtered_items()
 end
 
 
@@ -1391,7 +1392,7 @@ end
 
 
 function ui_rukzak:OnSortChange()
-  rkz_wnd:show_filtered_items( true )
+  self:show_filtered_items( true )
 end
 
 
