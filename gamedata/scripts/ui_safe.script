@@ -5,10 +5,9 @@ local BASE_HEIGHT   = 720                 -- высота окна сейфа !!! Это базовый р
                                           -- пропорционально изменяться размеры как окна, так и его элементов
 local SIZE_FACTOR   = BASE_HEIGHT/720     -- Коэффициент изменения размеров окна
 
-local safe_wnd
 class "ui_safe" (CUIScriptWnd)
+
 function ui_safe:__init(code, sid, tip, info) super()
-	safe_wnd = self
     self.sid          = sid   -- таблица с данными спавна нового ящика
     self.info         = info  -- инфопорция, выдаваемая при вскрытии
     self.code         = code  -- код ящика
@@ -36,11 +35,9 @@ function ui_safe:__init(code, sid, tip, info) super()
     self:InitLuaXml()
     self:InitApp   ()
     self:Bind      ()
-	--log1("--ui_safe:__init()")
 end
-function ui_safe:__finalize()
-	--log1("~~ui_safe:__finalize()")
-end
+
+function ui_safe:__finalize() end
 
 function ui_safe:InitLuaXml()
     local luaxml = xml.new("ui_safe")
@@ -135,9 +132,9 @@ function ui_safe:InitApp()
         btn:SetColor(GetARGB(0,255,255,255))
         self:Register(btn, name)
         
-        self:Connect(name, ui_events.BUTTON_CLICKED       , self.OnWeelButtonClicked , nil, btn, i)
-        self:Connect(name, ui_events.STATIC_FOCUS_RECEIVED, self.OnWeelButtonReceived, nil, btn)
-        self:Connect(name, ui_events.STATIC_FOCUS_LOST    , self.OnWeelButtonLost    , nil, btn)
+        self:Connect(name, ui_events.BUTTON_CLICKED       , self.OnWeelButtonClicked , self, btn, i)
+        self:Connect(name, ui_events.STATIC_FOCUS_RECEIVED, self.OnWeelButtonReceived, self, btn)
+        self:Connect(name, ui_events.STATIC_FOCUS_LOST    , self.OnWeelButtonLost    , self, btn)
     end
     
     self.handle = self.cxml:InitStatic('handle_static', self.bg)
@@ -145,9 +142,9 @@ function ui_safe:InitApp()
     self.handle_btn = self.cxml:InitButton('handle_button', self.handle)
     local name = 'handle_static'
     self:Register(self.handle_btn, name)
-    self:AddCallback(name, ui_events.BUTTON_CLICKED, self.OnHandleButtonClicked)
-    self:AddCallback(name, ui_events.STATIC_FOCUS_RECEIVED, self.OnHandleButtonReceived)
-    self:AddCallback(name, ui_events.STATIC_FOCUS_LOST, self.OnHandleButtonLost)
+    self:Connect(name, ui_events.BUTTON_CLICKED       , self.OnHandleButtonClicked , self, self.handle_btn)
+    self:Connect(name, ui_events.STATIC_FOCUS_RECEIVED, self.OnHandleButtonReceived, self)
+    self:Connect(name, ui_events.STATIC_FOCUS_LOST    , self.OnHandleButtonLost    , self)
 end
 
 -- пописать апдейт
@@ -215,52 +212,51 @@ function ui_safe:onUpdate()
 end
 
 function ui_safe:OnWeelButtonClicked(btn, id)
-    if safe_wnd.evt_weel_btn then                 -- не реагировать, пока не покинем зону статика и снова не зайдём
-        local old_num   = safe_wnd.current_num
+    if self.evt_weel_btn then                 -- не реагировать, пока не покинем зону статика и снова не зайдём
+        local old_num   = self.current_num
         local new_num   = (old_num + id) % 10
         local circle    = old_num == new_num   -- если клацаем по верхней кнопке - крутим полный круг
         local clockwise = id > 5               -- определить направление вращения. по часовой - true
         
-        safe_wnd.current_num    = new_num              -- записать новое значение
-        safe_wnd.weel_add_angle = clockwise and -safe_wnd.weel_spin_angle or safe_wnd.weel_spin_angle -- прибавлять или вычитать safe_wnd.weel_spin_angle
-        safe_wnd.upcode         = safe_wnd.upcode..new_num -- добавить к коду новое значение
-        safe_wnd.weel_angle_limit   = ((clockwise or circle) and 10 - id or  id)*36 
-        safe_wnd:OnWeelButtonLost(btn)               -- фиктивный выход курсора из статика кнопки (потушить нажатую)
-        safe_wnd.weel_spin    = true                 -- запустить поворот колеса
-        safe_wnd.evt_weel_btn = false 
+        self.current_num  = new_num              -- записать новое значение
+        self.weel_add_angle    = clockwise and -self.weel_spin_angle or self.weel_spin_angle -- прибавлять или вычитать self.weel_spin_angle
+        self.upcode       = self.upcode..new_num -- добавить к коду новое значение
+        self.weel_angle_limit  = ((clockwise or circle) and 10 - id or  id)*36 
+        self:OnWeelButtonLost(btn)               -- фиктивный выход курсора из статика кнопки (потушить нажатую)
+        self.weel_spin    = true                 -- запустить поворот колеса
+        self.evt_weel_btn = false 
     end
 end
 
 function ui_safe:OnWeelButtonReceived(btn)
-    if not safe_wnd.handle_spin and not safe_wnd.weel_spin then -- если крутиться колесо или ручка - не обрабатывать
-        safe_wnd.evt_weel_btn = true
+    if not self.handle_spin and not self.weel_spin then -- если крутиться колесо или ручка - не обрабатывать
+        self.evt_weel_btn = true
         btn:SetColor(GetARGB(255,255,255,255))
     end
 end
 
 function ui_safe:OnWeelButtonLost(btn)
-    if not safe_wnd.handle_spin and not safe_wnd.weel_spin then
-        safe_wnd.evt_weel_btn = false
+    if not self.handle_spin and not self.weel_spin then
+        self.evt_weel_btn = false
         btn:SetColor(GetARGB(0,255,255,255))
     end
 end
 
-function ui_safe:OnHandleButtonClicked()
-    safe_wnd.handle_spin = true
+function ui_safe:OnHandleButtonClicked(btn)
+    self.handle_spin = true
 end
 
-function ui_safe:OnHandleButtonReceived()
-    safe_wnd.handle:SetColor(GetARGB(255,255,255,100))
+function ui_safe:OnHandleButtonReceived(btn)
+    self.handle:SetColor(GetARGB(255,255,255,100))
 end
 
-function ui_safe:OnHandleButtonLost()
-    safe_wnd.handle:SetColor(GetARGB(255,255,255,255))
+function ui_safe:OnHandleButtonLost(btn)
+    self.handle:SetColor(GetARGB(255,255,255,255))
 end
 
 function ui_safe:Exit()
     self:unBind()
     self:GetHolder():start_stop_menu(self,true)
-	safe_wnd = nil
 end
 
 function ui_safe:OnKeyboard(dik, keyboard_action)
@@ -268,7 +264,6 @@ function ui_safe:OnKeyboard(dik, keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE then
 			self:unBind()
-			safe_wnd = nil
 		end
 	end
 end
