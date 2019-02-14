@@ -292,12 +292,7 @@ function select_car_trade_items:__init() super()
 	self.itmage:SetText		("itemage")
 	self.itmage:SetFont		(GetFontLetterica16Russian())
 	self.itmage:SetTextColor	(ca,cr,cg,cb)
-	--log1("--select_car_trade_items:__init()")
 end
-function select_car_trade_items:__finalize()
-	--log1("--select_car_trade_items:__finalize()")
-end
-
 
 class "select_car_descr" (CUIListItemEx)
 function select_car_descr:__init() super()
@@ -316,25 +311,19 @@ function select_car_descr:__init() super()
 	self.itmnum:SetText		("itemnum")
 	self.itmnum:SetFont		(GetFontLetterica18Russian())
 	self.itmnum:SetTextColor	(ca,cr,cg,cb)
-	--log1("--select_car_descr:__init()")
-end
-function select_car_descr:__finalize()
-	--log1("--select_car_descr:__finalize()")
+
 end
 
 
-local ct_wnd
 class "car_trade_dialog" (CUIScriptWnd)
 function car_trade_dialog:__init() super()
-	ct_wnd = self
 	self:InitControls()
 	self:InitCallBacks()
 	self:FillList()
-	--log1("--car_trade_dialog:__init()")
 end
-function car_trade_dialog:__finalize()
-	--log1("~~car_trade_dialog:__finalize()")
-end
+
+function car_trade_dialog:__finalize() end
+
 
 function car_trade_dialog:InitControls()
 	-- здесь определяем координаты левого верхнего угла и ширину-высоту
@@ -394,12 +383,12 @@ function car_trade_dialog:InitControls()
 end
 
 
-function car_trade_dialog:InitCallBacks() -- тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.OnListItemDbClicked)
-	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit)
-	self:AddCallback("list_window", ui_events.LIST_ITEM_CLICKED, self.OnListItemClicked)
-	self:AddCallback("list_window", ui_events.WINDOW_LBUTTON_DB_CLICK, self.OnListItemDbClicked)
-	self:AddCallback("message_box", ui_events.MESSAGE_BOX_OK_CLICKED, self.OnMsgYes)
+function car_trade_dialog:InitCallBacks()
+	self:AddCallback("btn_4", ui_events.BUTTON_CLICKED, self.buy_car, self)
+	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
+	self:AddCallback("list_window", ui_events.LIST_ITEM_CLICKED, 			  self.OnListItemClicked,		self)
+	self:AddCallback("list_window", ui_events.WINDOW_LBUTTON_DB_CLICK,		  self.OnListItemDbClicked,		self)
+	self:AddCallback("message_box",		ui_events.MESSAGE_BOX_OK_CLICKED,	  self.OnMsgYes,				self)
 end
 
 
@@ -427,8 +416,8 @@ end
 
 function car_trade_dialog:OnListItemClicked()
 
-	local list_box = ct_wnd:GetListWnd("list_window")
-	local desc_box = ct_wnd:GetListWnd("desc_window")
+	local list_box = self:GetListWnd("list_window")
+	local desc_box = self:GetListWnd("desc_window")
 	
 	if list_box:GetSize() == 0 then return end
 	
@@ -438,7 +427,7 @@ function car_trade_dialog:OnListItemClicked()
 
 	if item == nil then return end
 	
-	ct_wnd.btn_4:Enable(true)
+	self.btn_4:Enable(true)
 
 	local destr_item_index = tonumber(item.itmnum:GetText())
 	local destr_item = trade_cars[destr_item_index]
@@ -447,9 +436,9 @@ function car_trade_dialog:OnListItemClicked()
 	
 	local str = destr_item.descript
 	
-	ct_wnd:DrawCurCar(destr_item.section, 300, 90)
-	ct_wnd:DrawMoney(money, 260, 63)
-	ct_wnd:DrawPrice(cost, 260, 83)
+	self:DrawCurCar(destr_item.section, 300, 90)
+	self:DrawMoney(money, 260, 63)
+	self:DrawPrice(cost, 260, 83)
 	
 	local first = 1
 	local last = 45
@@ -457,16 +446,16 @@ function car_trade_dialog:OnListItemClicked()
 	desc_box:RemoveAll()
 
 	for _, line in ipairs(str:width(50, true)) do
-		ct_wnd:AddItemToDesc(line)
+		self:AddItemToDesc(line)
 	end
 
-	ct_wnd.car_textur:Show(true)
-	ct_wnd.carprice:Show(true)
+	self.car_textur:Show(true)
+	self.carprice:Show(true)
 end
 
 
 function car_trade_dialog:OnListItemDbClicked()
-	ct_wnd:buy_car()
+	self:buy_car()
 end
 
 
@@ -543,8 +532,8 @@ end
 
 
 function car_trade_dialog:on_quit()
-	ct_wnd:GetHolder():start_stop_menu(ct_wnd, true)
-	ct_wnd = nil
+	self:GetHolder():start_stop_menu(self, true)
+	self:ClearCallbacks()
 end
 
 
@@ -682,9 +671,10 @@ function car_trade_dialog:DrawDescript(insert_text, x, y)
 end
 
 function car_trade_dialog:OnMsgYes()
-	if ct_wnd.msgbox_id == 1 then return end
+
+	if self.msgbox_id == 1 then return end
 	
-	ct_wnd.msgbox_id = 0
+	self.msgbox_id = 0
 end
 
 
