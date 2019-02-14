@@ -209,6 +209,11 @@ function on_first_update()
 	on_first_update_chameleon()
 end
 
+local tActorItems = {}
+local function exp(...)
+	log1(string.format(...))
+end
+
 
 local wolf_pos = vector():set(-200.87, -20.04, -147.76)
 
@@ -985,11 +990,9 @@ function search_esc_lager_bomba_complete()
 	return false
 end
 
-
-local bomb_wnd
 class "ui_neutralize_bomb" (CUIScriptWnd)
 function ui_neutralize_bomb:__init() super()
-	bomb_wnd = self
+	self.dlg = self
 	db.actor:give_info_portion("esc_bomb_ui")
 
 	local W, H = device().width,device().height
@@ -1018,7 +1021,7 @@ function ui_neutralize_bomb:__init() super()
     self.btn_yellow:Init(0, 200, 128, 32)
 	self.btn_yellow:InitTexture([[ui\ui_btn_01_t]])
     self:AttachChild(self.btn_yellow)
-	self:Connect("btn_yellow", ui_events.BUTTON_CLICKED, self.on_press_key, nil, not has_alife_info("esc_bomb_cable_green"))
+	self:AddCallback("btn_yellow", ui_events.BUTTON_CLICKED, self.on_press_yellow,  self)
 
 	self.btn_green = CUIButton()
 	self.btn_green:SetWindowName("btn_green")
@@ -1027,21 +1030,17 @@ function ui_neutralize_bomb:__init() super()
     self.btn_green:Init(0, 168, 128, 32)
 	self.btn_green:InitTexture([[ui\ui_btn_01_t]])
     self:AttachChild(self.btn_green)
-	self:Connect("btn_green",  ui_events.BUTTON_CLICKED, self.on_press_key, nil, has_alife_info("esc_bomb_cable_green"))
-	--log1("--ui_neutralize_bomb:__init()")
-end
-function ui_neutralize_bomb:__finalize()
-	--log1("~~ui_neutralize_bomb:__finalize()")
+	self:AddCallback("btn_green",  ui_events.BUTTON_CLICKED, self.on_press_green,   self)
 end
 
-function ui_neutralize_bomb:on_press_key(boom)
-	if not boom then
+function ui_neutralize_bomb:on_press_green()
+	if has_alife_info("esc_bomb_cable_green") then
 		this.messege_of_sidor_a_kill_mercs()
 		this.ReleaseBomb()
 	else
 		this.DetonateBomb()
 	end
-	bomb_wnd:quit()
+	self:quit()
 end
 
 function ui_neutralize_bomb:OnKeyboard(dik, key_act)
@@ -1060,11 +1059,20 @@ function ui_neutralize_bomb:OnKeyboard(dik, key_act)
 	return true
 end
 
-function ui_neutralize_bomb:quit()
-	level.start_stop_menu(self, true)
-	bomb_wnd = nil
+function ui_neutralize_bomb:on_press_yellow()
+	if not has_alife_info("esc_bomb_cable_green") then
+		this.messege_of_sidor_a_kill_mercs()
+		this.ReleaseBomb()
+	else
+		this.DetonateBomb()
+	end
+	self:quit()
 end
 
+function ui_neutralize_bomb:quit()
+	level.start_stop_menu(self, true)
+	self.dlg = nil
+end
 
 function messege_of_sidor_a_kill_mercs()
 	db.actor:give_info_portion("esc_kvest_killers_mined_lager_kill_killers")
@@ -2354,20 +2362,18 @@ function search_code_of_case()
 end
 
 function on_use_case_use_rub()
-	level.start_stop_menu(this.case_use_rub(), true)
+	level.start_stop_menu(tasks_functor.case_use_rub(), true)
 end
 
-local case_wnd
 class "case_use_rub" (CUIScriptWnd)
 function case_use_rub:__init() super()
-	case_wnd = self
+	self.dlg = self
 	self:InitControls()
 	self:InitCallBacks()
 	self:SetWindowName("case_use_rub")
-	--log1("--case_use_rub:__init()")
 end
+
 function case_use_rub:__finalize()
-	--log1("~~case_use_rub:__finalize()")
 end
 
 function case_use_rub:InitControls()
@@ -2386,19 +2392,19 @@ function case_use_rub:InitControls()
 end
 
 function case_use_rub:InitCallBacks()
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.open_case)
-	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.crash_case)
-	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.quit)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.open_case, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.crash_case, self)
+	self:AddCallback("btn_3", ui_events.BUTTON_CLICKED, self.quit, self)
 end
 
 function case_use_rub:open_case()
-	local password = case_wnd.EditBoxPassword:GetText()
+  local password = self.EditBoxPassword:GetText()
 	if password == "20061204" and ogse.var_exists("zapis_2_a_case") then
 		ogse.spawn_item_in_inv("pol_code_of_case")
 		db.actor:give_info_portion("rad_kvest_dobrozhelatel_search_code_2_start")
 		local obj = ogse.spawn_object(spawn_db.case_use_rub_open_case_bread)
 		add_map_spot(obj.id, "search_code_2_svaznoi", game.translate_string("dobrozhelatel_string4"))
-		case_wnd:GetHolder():start_stop_menu(case_wnd, true)
+		self:GetHolder():start_stop_menu(self, true)
 		ogse.delete_var("zapis_2_a_case")
 	else
 		ogse.autohiding_msg(game.translate_string("dobrozhelatel_string5"), 5000)
@@ -2406,7 +2412,7 @@ function case_use_rub:open_case()
 end
 
 function case_use_rub:crash_case()
-	case_wnd:quit()
+	self:quit()
 	local actor_hit = hit()
 	actor_hit.direction = vector():set(0, 0, 0)
 	actor_hit.impulse = 1 --20
@@ -2421,8 +2427,8 @@ function case_use_rub:quit()
 	if not Actor_Has_Items("case_use_rub") and not has_alife_info("rad_kvest_dobrozhelatel_search_code_2_start") then
 		ogse.spawn_item_in_inv("case_use_rub")
 	end
-	case_wnd:GetHolder():start_stop_menu(case_wnd, true)
-	case_wnd = nil
+	self:GetHolder():start_stop_menu(self, true)
+	self.dlg = nil
 end
 
 function case_use_rub:OnKeyboard(dik, keyboard_action)
@@ -2434,6 +2440,33 @@ function case_use_rub:OnKeyboard(dik, keyboard_action)
 	end
 end
 
+class "GameMessege" (CUIScriptWnd)
+function GameMessege:__init(MessText, cap) super()
+    self:Init(360,300,650,212)
+	self.fon = CUIStatic()
+	self.fon:Init(-50,0,650,212)
+	self.fon:InitTexture("ui\\ui_trade_list_back")
+	self.fon:SetText(cap)
+	self.fon:SetTextX(15)
+	self.fon:SetTextY(10)
+	self.fon:SetTextAlign(0)
+	self:AttachChild (self.fon)
+	self.text = CUIStatic()
+	self.text:Init(-145,60,650,30)
+	self.text:SetText(MessText)
+	self.text:SetTextAlign(2)
+	self.fon:AttachChild (self.text)
+	self.btn = CUI3tButton ()
+	self.btn:Init("ui\\ui_btn_02", 150,150,45,26)
+	self.btn:SetText("OK")
+	self:Register(self.btn, "btn")
+	self:AddCallback("btn", ui_events.BUTTON_CLICKED, self.Btn_OK_GameMessege, self)
+	self.fon:AttachChild(self.btn)
+end
+
+function GameMessege:Btn_OK_GameMessege()
+    self:GetHolder():start_stop_menu(self, true)
+end
 
 function search_code2_meet_with_svyaznoi()
 	if db.actor and db.actor:position():distance_to_sqr(vector():set(-194.79,-13.0,37.92),130801,1657) < 11^2 then
@@ -2502,17 +2535,16 @@ function bun_babah_bomba(bomb_id)
 end
 
 
-local comp_wnd
 class "ui_bun_comp" (CUIScriptWnd)
+
 function ui_bun_comp:__init() super()
 	self:InitControls()
 	self:InitCallBacks()
-	comp_wnd = self
+	self.dlg = self
 	self:SetWindowName("ui_bun_comp")
-	--log1("--ui_bun_comp:__init()")
 end
+
 function ui_bun_comp:__finalize()
-	--log1("--ui_bun_comp:__finalize()")
 end
 
 function ui_bun_comp:InitControls()
@@ -2529,15 +2561,15 @@ function ui_bun_comp:InitControls()
 end
 
 function ui_bun_comp:InitCallBacks()
-	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.ok)
-	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.quit_ui_bun_comp)
+	self:AddCallback("btn_1", ui_events.BUTTON_CLICKED, self.ok, self)
+	self:AddCallback("btn_2", ui_events.BUTTON_CLICKED, self.quit_ui_bun_comp, self)
 end
 
 function ui_bun_comp:ok()
-	local password = comp_wnd.EditBoxPassword:GetText()
+  local password = self.EditBoxPassword:GetText()
 	if password == "cnfkrthrksr" and ogse.var_exists("help_to_svyaznoy") then
 		db.actor:give_info_portion("rad_kvest_dobrozhelatel_password_enter")
-		comp_wnd:quit_ui_bun_comp()
+		self:quit_ui_bun_comp()
 		delete_dobroshelatel_docs()
 		ogse.autohiding_msg(game.translate_string("dobrozhelatel_string6"), 10000)
 		ogse.delete_var("help_to_svyaznoy")
@@ -2546,9 +2578,10 @@ function ui_bun_comp:ok()
 	end
 end
 
+
 function ui_bun_comp:quit_ui_bun_comp()
-	comp_wnd:GetHolder():start_stop_menu(comp_wnd, true)
-	comp_wnd = nil
+	self:GetHolder():start_stop_menu(self, true)
+	self.dlg = nil
 end
 function ui_bun_comp:OnKeyboard(dik, keyboard_action) --не тестил
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
@@ -2561,10 +2594,9 @@ end
 
 function ui_bun_comp_show()
 	if not has_alife_info("rad_kvest_dobrozhelatel_password_enter") then
-		level.start_stop_menu(this.ui_bun_comp(), true)
+		level.start_stop_menu(tasks_functor.ui_bun_comp(), true)
 	end
 end
-
 
 function delete_dobroshelatel_docs()
 	local items = {"zapis_a_case", "zapis_2_a_case", "zapis_3_a_case", "pol_code_of_case", "pda_monolit"}
