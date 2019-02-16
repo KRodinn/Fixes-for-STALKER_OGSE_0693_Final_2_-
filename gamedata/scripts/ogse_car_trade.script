@@ -445,7 +445,7 @@ function car_trade_dialog:OnListItemClicked()
 
 	desc_box:RemoveAll()
 
-	for _, line in ipairs(str:width(50, true)) do
+	for _, line in ipairs( str:width( is_16_9_mode() and 50 or 30, true ) ) do
 		self:AddItemToDesc(line)
 	end
 
