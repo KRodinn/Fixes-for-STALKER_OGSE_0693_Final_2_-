@@ -206,13 +206,14 @@ function autodoc:InitControls()
 end
 
 function autodoc:InitCallBacks() --Тут интерактивные элементы, при определенном действии выполняется заданная ф-ия
-	local function switch(v) --KRodin: из-за особенностей метода :Сonnect, у функций, не являющихся членами класса, первый аргумент не должен использоваться!
+	local function switch(_, v)
 		ogse_autodoc.switch_on[v] = not ogse_autodoc.switch_on[v]
 	end
-	self:Connect("btn_main", ui_events.BUTTON_CLICKED, switch, "ad")
-	self:Connect("btn_h",    ui_events.BUTTON_CLICKED, switch, "h")
-	self:Connect("btn_s",    ui_events.BUTTON_CLICKED, switch, "s")
-	self:Connect("btn_r",    ui_events.BUTTON_CLICKED, switch, "r")
+	--KRodin: self передаём, чтобы сборщик мусора не удалил объект раньше времени!
+	self:Connect("btn_main", ui_events.BUTTON_CLICKED, switch, self, "ad")
+	self:Connect("btn_h",    ui_events.BUTTON_CLICKED, switch, self, "h")
+	self:Connect("btn_s",    ui_events.BUTTON_CLICKED, switch, self, "s")
+	self:Connect("btn_r",    ui_events.BUTTON_CLICKED, switch, self, "r")
 end
 
 function autodoc:Update()
