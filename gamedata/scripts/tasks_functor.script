@@ -2552,7 +2552,7 @@ function ui_bun_comp:OnKeyboard(dik, keyboard_action) --не тестил
 	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE  then
-			self:quit_ui_bun_comp()
+			self:ClearCallbacks()
 		end
 	end
 end

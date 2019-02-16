@@ -2548,6 +2548,7 @@ function tower_box:Exit()
 end
 
 function tower_box:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik == DIK_keys.DIK_ESCAPE then
 			self:unBind()

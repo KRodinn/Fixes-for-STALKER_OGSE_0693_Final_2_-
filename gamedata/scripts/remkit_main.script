@@ -208,11 +208,10 @@ function remkit:cheat_main()
 			return
 		elseif self.remkit_sel == nil then
 			self.remkit_sel = repair_dialog()
-			--self.remkit_sel.owner = self --???
 		end
 		self:GetHolder():start_stop_menu(self.remkit_sel, true)
 		self:GetHolder():start_stop_menu(self, true)
-		self:Show(false)
+		self:ClearCallbacks()
 	end
 end
 
