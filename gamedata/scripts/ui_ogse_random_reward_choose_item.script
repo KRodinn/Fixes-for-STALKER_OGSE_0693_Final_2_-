@@ -188,6 +188,7 @@ end
 
 function choose_item:take_money_as_reward_no_quit()
 	dialogs.relocate_money(self.npc, self.money_old, "in")
+	self:ClearCallbacks()
 end
 
 function choose_item:on_quit()

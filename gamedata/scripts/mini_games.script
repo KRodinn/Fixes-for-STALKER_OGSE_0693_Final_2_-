@@ -107,6 +107,15 @@ function card_game_21p:InitCallBacks()
 	self:AddCallback("btn_quit", ui_events.BUTTON_CLICKED, self.on_quit, self)
 end
 
+function card_game_21p:OnKeyboard(dik, keyboard_action)
+	CUIScriptWnd.OnKeyboard(self,dik,keyboard_action)
+	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
+		if dik == DIK_keys.DIK_ESCAPE then
+			self:ClearCallbacks()
+		end
+	end
+end
+
 local tPosCards = {
 	[1] = {55, 280},
 	[2] = {145, 280},
