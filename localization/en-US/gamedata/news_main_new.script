@@ -1,0 +1,1927 @@
+-- -*- mode: lua; coding: windows-1251-dos -*-
+
+--/ news_main_new.script /--
+--/ OGS Evolution - team /--
+--/ ver. 2.1 /--
+--/ Использовались некоторые наработки АМК (тексты,некоторые функции) /--
+
+--/ функции выдачи сообщений /--
+
+
+local random_news = sys_ini:r_s32("options","random_news") 
+local news_showtime = sys_ini:r_s32("options","news_showtime") -- стандартное время показа сообщения
+
+local post_message_prob = 1 -- простые сообщения, сообщения о выбросе.
+local post_message_prob2 = 1 --продажа айтема
+local post_message_dolg = 1 --Сообщения от Долговцев
+local post_message_freedom = 1 --Сообщения от Свободовцев
+local post_message_random = 1 --Рандомные составные сообщения
+local post_message_horror = 1 --Сообщения во время ужаса
+local post_message_PDA_error = 1 --Сообщения ПДА о глюках сети и сообщения с ошибками
+local post_message_semetskjy_death = 1 --Сообщения о смерти Семецкого
+local post_message_vibros_news = 1 --Сообщения о помощи при начале Выброса
+local post_message_fake_vibros_news = 1 --Ложные сообщения о Выбросе
+local post_message_net_dialogs = 1 --Диалоги сталкеров в сети
+
+local sem_death_message_prob = 0.07 -- вероятность появления сообщения о смерти Семецкого
+local sem_komm_message_prob = 0.8 -- вероятность комментариев к сообщению о смерти Семецкого
+local vubros_msg_fake_prob = 0.03 -- вероятность появления ложного сообщения о Выбросе
+local net_dialogs_message_prob = 0.1 -- вероятность появления диалогов сталкеров в сети
+
+
+-- Выброс! (тексты)
+local blu_when = {
+"in about two minutes.",
+"very soon.",
+"within several minutes.",
+"in a couple of minutes.",
+"every minute."
+}
+
+local blu_message = {
+"Seek for a strong shelter - the Blowout is about to happen ",
+"Sakharov tells his equipment has determined the approximate time for the Surge to break out ",
+"When at Sakharov's, talked to him about the Surge. It will burst out ",
+"Seek cover! The Blowout's approaching ",
+"Attention! The eggheads say, the Surge may start ",
+"I tell you verily - the Blowout will begin "
+}
+
+local blu_query = {
+". Is the info trustworthy?",
+". Sure? Ain't this a mistake?",
+". Is that so? No bullshit?",
+". How come? It happened not long ago!",
+"! You, son of a bitch! You must be bullshitting!",
+"! Damn it... Are you sure?",
+"! Shit! Can't you have told that earlier?! If that's a trick, I'll kill you!",
+". Is the data confirmed?"
+}
+
+local blu_anser_yes = {
+"It's certain. Everybody, batten down!",
+"The info has been confirmed!",
+"The source is absolutely trustworthy! Lets burrow!",
+"The data is correct! Lie in hides, fellas!",
+"My source of info never misses! That's for sure!",
+"Yes, everything's right, no doubt!",
+"Ya don't believe? Take a walk! How'd ya like your grave to be decorated?",
+"Rest in peace, faithless! May your souls be forgiven..."
+}
+
+local blu_anser_no = {
+"Additional metering made it clear, that the previous warning had been a mistake...",
+"The data turned out to be wrong.",
+"The info has not been confirmed.",
+"The sensors have generated a wrong signal. Sorry.",
+"The equipment hasn't confirmed the previous issue. Sorry for the mistake, stalkers."
+}
+
+local blu_reaction = {
+"Damn you! Yap!",
+"You're a yap, man! I've almost made my pants dirty!",
+"Heck! I've almost spit my lungs out while running to the cover!",
+"Why the hell did you fuck everybody's brains then?",
+"You, freak! Whatch your sayings next time!",
+"Fuck you, man! I'll murder you some day!",
+"Damn you, shithead! Wait until I get my hands on you - you'll get buried!",
+"I wish some zombies tear you to pieces! Think ya cute to trick people like that?!",
+"Moron!"
+}
+
+
+-- Выброс!
+function vubros_msg()
+if random_news == 1 then
+	if post_message_prob == 1 and not isIndoor(level.name()) then
+		local from1 = gen_names_strings()
+		local from2 = gen_names_strings()
+		local from3 = gen_names_strings()
+		local bluw_msg_when = blu_when[math.random(table.getn(blu_when))]
+		local bluw_msg = blu_message[math.random(table.getn(blu_message))]
+		
+		if bluw_msg ~= nil and bluw_msg_when ~= nil then
+			local news_text = "%c[255,160,160,160]"..from1..":\\n%c[default]"..bluw_msg .. bluw_msg_when 
+			db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,282,83,47), 0, news_showtime)
+		end
+		
+		local blu_query_text = blu_query[math.random(table.getn(blu_query))]
+		if blu_query_text ~= nil and from1 ~= nil and from2 ~= nil then
+			local news_text = "%c[255,160,160,160]".. from2 ..":\\n%c[default]" .. from1 .. blu_query_text
+			db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), math.random(2000,4000), news_showtime)
+		end
+		
+		if has_alife_info("pre_blowout") then 
+			local blu_anser_yes_text = blu_anser_yes[math.random(table.getn(blu_anser_yes))]
+			if blu_anser_yes_text ~= nil and from1 ~= nil then
+				local news_text = "%c[255,160,160,160]".. from1 ..":\\n%c[default]" .. blu_anser_yes_text
+				db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), math.random(5000,7000), news_showtime)
+			end
+		else
+			local blu_anser_no_text = blu_anser_no[math.random(table.getn(blu_anser_no))]
+			if blu_anser_no_text ~= nil and from1 ~= nil then
+				local news_text = "%c[255,160,160,160]".. from1 ..":\\n%c[default]" .. blu_anser_no_text
+				db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), math.random(5000,7000), news_showtime)
+			end
+			local blu_reaction_text = blu_reaction[math.random(table.getn(blu_reaction))]
+			if blu_reaction_text ~= nil and from1 ~= nil then
+				local news_text = "%c[255,160,160,160]".. from3 ..":\\n%c[default]" .. blu_reaction_text
+				db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), math.random(8000,10000), news_showtime)
+			end
+			
+		end
+		
+	end
+end
+end
+
+
+-- Выброс кончился (тексты)
+local blu_out_text = {
+"Hew... I seem to be alive. What about you, folks?",
+"That was close...",
+"I've almost kicked the bucket... But was lucky this time...",
+"Ha-ha! I'm alive! ALIVE!!!",
+"It can drive you mad... Finally, it's over...",
+"It seems to have passed...",
+"I was sure I ain't gonna make it... Screw it! I'm alive! Alive and running!"
+}
+local anser_blu_out_text = {
+", say thanks to the Zone for having had mercy on you. ",
+". Yeah... That was close...",
+"! You're alive, man! Attaboy!",
+", shit... I got caught in slightly... Need a medkit, please...",
+", and what about the next one? Any news?",
+", сsay thanks to the Zone for having let you live.",
+", now you know how it looks like, don't you? That's it!"
+}
+
+-- Выброс кончился
+function vubros_out_msg()
+if math.random() < 0.7 then	
+	if post_message_prob == 1 and not isIndoor(level.name()) then
+		local from1 = gen_names_strings()
+		local from2 = gen_names_strings()
+		local msg_type = "%c[255,160,160,160]".. from1 ..":\\n%c[default]"
+		local blu_out_message = blu_out_text[math.random(table.getn(blu_out_text))]
+		if blu_out_message ~= nil and from1 ~= nil and from2 ~= nil and msg_type ~= nil then
+			local news_text = msg_type .. blu_out_message
+			db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), math.random(2000,5000), news_showtime)
+		end
+		if math.random() < 0.8 then
+			local anser_blu_out_message = anser_blu_out_text[math.random(table.getn(anser_blu_out_text))]
+			if anser_blu_out_message ~= nil and from1 ~= nil and from2 ~= nil then
+				local news_text = "%c[255,160,160,160]".. from2 ..":\\n%c[default]" .. from1 .. anser_blu_out_message
+				db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), math.random(6000,9000), news_showtime)
+			end
+		end
+	end
+end
+end
+
+-- Ложные сообщения о Выбросе
+function vubros_msg_fake()
+if post_message_fake_vibros_news == 1 and math.random() < vubros_msg_fake_prob then
+	vubros_msg()
+end
+end
+
+-- Убеждаемся, что персонажи живы
+function npc_alive_check(sid1, sid2)
+local npc1, npc2
+local flag1 = false
+local flag2 = false
+	if sid1 ~= nil then
+		npc1 = level_object_by_sid(sid1)
+		if npc1 ~= nil and npc1:alive() == true then
+			flag1 = true
+		else
+			flag1 = false
+		end
+	else
+		flag1 = false
+	end
+	if sid2 ~= nil then
+		npc2 = level_object_by_sid(sid2)
+		if npc2 ~= nil and npc2:alive() == true then
+			flag2 = true
+		else
+			flag2 = false
+		end
+	else
+		flag2 = true
+	end
+	if flag1 == true and flag2 == true then
+		return true
+	else
+		return false
+	end   
+end 
+
+-- Тексты сообщений
+local dolg_news={
+	{news = 
+	{text = "We've got problems with the equipment. Difficulties with communication between quads and HQ may be experienced for a couple of days.",
+	condition = true}},
+	{news = 
+	{text = "Stop choking up the air! Your \"heroic\" deeds are not interesting for anybody!",
+	condition = true}},
+	{news = 
+	{text = "Proceed to secure channel for security software update. If there happens a leak of secret info due to somebody having been too lazy to download the patch - I'll strangle him!",
+	condition = true}},
+	{news = 
+	{text = "All info regarding raids against mutants and other operations must be transmitted via the secure channel. No info must leak!",
+	condition = true}},
+	{news = 
+	{text = "Stalkers! Join the \"Duty\". Lets protect the planet from the Zone's contagion!",
+	condition = true}},
+	{news = 
+	{text = "Skilled stalkers wanted for raids against snorks. Respective payment guaranteed.",
+	condition = true}},
+	{news = 
+	{text = "Skilled stalkers wanted for raids against mutants. Respective payment guaranteed.",
+	condition = true}},
+	{news = 
+	{text = "Experienced stalkers wanted for raids against monsters. Respective payment guaranteed.",
+	condition = true}},
+	{news = 
+	{text = "Petrenko, respond immediately, damn you! What's happened to the secure channel?! Down again?!",
+	condition = npc_alive_check, argument1 = 506}},
+	{news = 
+	{text = "Petrenko speaking. We've got temporary problems with the secure channel. Any urgent info to be sent to my private message box.",
+	condition = npc_alive_check, argument1 = 506}},
+	{news = 
+	{text = "General Voronin speaking. All quads, respond immediately! Overall radio muster!",
+	condition = npc_alive_check, argument1 = 507}},
+	{news = 
+	{text = "Petrenko speaking. I repeat: any access to the HQ must be carried out according to valid permits or upon my personal approval only!",
+	condition = npc_alive_check, argument1 = 506}},
+	{news = 
+	{text = "Petrenko speaking. Quad 3, awaiting for data on the scout raid. Report about the casualties, if any! What the hell is going on with your radio equipment?!",
+	condition = npc_alive_check, argument1 = 506}},
+	{news = 
+	{text = "Jeka 'Captain' speaking. All quad officers to report to General Voronin!!",
+	condition = npc_alive_check, argument1 = 507}},
+	{news = 
+	{text = "Prapor speaking. Attention, all! Ammunition and cartridges will be distributed during hours of service only! I'm not going to spend the night here!!!",
+	condition = true}},
+	{news = 
+	{text = "Petrenko speaking. Quad 5! The raid for monsters for the Arena has never been cancelled! Get out of the bar right away! No anarchist tricks will be tolerated!!!",
+	condition = npc_alive_check, argument1 = 506}},
+	{news = 
+	{text = "Petrenko speaking. Quads 1 to 4! I repeat, quads 1 to 4 only! Square thirteen, helix nine, chart six. Entrance to the area is denied until 1700 tomorrow. High activity of mutants expected.",
+	condition = npc_alive_check, argument1 = 506}}
+}
+
+local freedom_news={
+	{news = 
+	{text = "God bless the \"Freedom\"! Spread the gifts of Zone to make the World better!",
+	condition = true}},
+	{news = 
+	{text = "Join the \"Freedom\"! Stop usurpation of the Zone!",
+	condition = true}},
+	{news = 
+	{text = "Experienced stalkers wanted to raid for artifacts. Generous payment guaranteed.",
+	condition = true}},
+	{news = 
+	{text = "Free stalkers! Listen to the voice of \"Freedom\"! If you're seeking for a better life in the Zone without any soldiery charges like that in the \"Duty\" - come and join us! You are always welcome!",
+	condition = true}},
+	{news = 
+	{text = "All our lot - connect to the secure channel urgently to get the security software updated. Otherwise never complain about the \"Duty\" to have got aware of your raids.",
+	condition = true}},
+	{news = 
+	{text = "When on a mission, transmit every byte of info via the secure channel. Don't be idiots to think that only our lot keeps reading that.",
+	condition = true}},
+	{news = 
+	{text = "All data concerning mercs' dislocation to be sent to my private message box. That's really important!",
+	condition = true}},
+	{news = 
+	{text = "Check it out, dudes! A \"Springboard\" may toss you high, but the grass from it gonna MAKE YOU HIGH!!! Ha-ha-ha!",
+	condition = true}},
+	{news = 
+	{text = "Lukash! We've been waiting for relief at the Barrier for 3 days already! We're damn irritated!", 
+	condition = npc_alive_check, argument1 = 707}},
+	{news = 
+	{text = "Skinflint speaking. I've dug up a limited amount of toilet paper. Whoever tired of burdocks - be quick, there ain't much!",
+	condition = npc_alive_check, argument1 = 734}},
+	{news = 
+	{text = "The relief at the Barrier is late again! WTF?!?! I'm not willing to scorch my brain here any longer!!!",
+	condition = true}},
+	{news = 
+	{text = "Expeditionary squad reporting: currently in combat against superior enemy forces! Equipment's been partially destroyed. Requesting for reinforcement!",
+	condition = true}},
+	{news = 
+	{text = "Max! We've failed! Getting outta here!",
+	condition = npc_alive_check, argument1 = 702}}
+}
+
+local noname_teamletes={
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]A group of helicopters was noticed heading north. Coordinates are attached. Stay covered - we don't know their instructions.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Quad 3:\\n%c[default]Reporting. Following in the direction of the battered heli. No encounters up until now.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Quad 2:\\n%c[default]Reporting. A wave of mutants has been observed coming from the north-west (refer to the attached coordinates).",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Quad 1:\\n%c[default]A horde of mutants has been spotted approaching from the northern canyon.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Quad 4:\\n%c[default]Lots of monsters have been observed coming from the east, presumably from the Dark Valley.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Mayday! A pack of dogs is rushing straight at us! The coordinates are attached.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Damn those marauders... They've wrecked Pripyat entirely... I feel so sorry - I have grown up there...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]A pseudodog has pounced on me! I hardly managed to shoot it down!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]I've noticed a group of some strange stalkers heading towards the Bar.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]A group of five men is going towards the Barrier. Apparenly they are monolithians, so take measures accordingly.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Origin unknown:\\n%c[default]Mayday! The military are keeping us down in the Agroprom's main building!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Lukash! We've wasted the mercs. Going back home now.",
+	condition = npc_alive_check, argument1 = 707}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Two-three-seven, heading to the base. Get ready to meet us.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Marauders have squeezed me! Help!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]I have intercepted a message thread between the military. They are planning some operation at Yantar.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Drunk Programmer:\\n%c[default]I need to gain access to the Internet. Is there any in the Bar or do I have to trail to Sidorovich?",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Sidorovich:\\n%c[default]It has become too dangerous to be a trader... Security wanted. For me and my stuff.",
+	condition = npc_alive_check, argument1 = 3}},
+	{news = 
+	{text = "%c[255,160,160,160]Barkeep:\\n%c[default]Let me remind everybody: whoever finds any kind of old musical records, let him bring them to me! I don't promise any money, but we'll play it in the bar, if technically possible.",
+	condition = npc_alive_check, argument1 = 500}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]A safecracker wanted, experienced in deep raids to the north Zone.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Vasiliy! Give my guitar back, asshole!!!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Guys! Don't play cards with Bilbo - he's a swindler!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Has anybody got a \"Gameboy\"? I'd borrow for a couple of days to play a bit...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]I've been to the Warehouses recently, found a whole box with medals of honour. Who was supposed to get them, I wonder?",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]I've heard rumours about the americans to have sent a superman to the Zone. I'm eager to take a look at him, heh.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Origin unknown:\\n%c[default]Don't poke your nose into the tunnels - there are numbers of mutants there! Better plan your way along the surface.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Champ, head up to the bar, there's a job for you!!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Be careful in that village by the warehouses, folks! There's plenty of burning fuzz sweeped to the pillars by wind!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Hello, damn heroes! Enough trying to drive us out of the car factory! Isn't it clear for you, morons, that it's our territory?! So keep the hell outta there!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Origin unknown:\\n%c[default]Damn! Hordes of zombies at Yantar again! Be careful there, dudes!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Fellow stalkers! Sakharov has been offering a pretty penny for the stuff! He's also looking for someone to go to the local plant... I'm not willing to take the risk... Plenty of zombies and all...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Attention everybody! If you are offered to buy some hi-tech rifle for 800 in the village in the Dark Valley, DON'T go for it! It's a fraud!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Baldie:\\n%c[default]Some bandits have turned up in the Dark Valley again. Too bad. Must be extirpated.",
+	condition = npc_alive_check, argument1 = 607}},
+	{news = 
+	{text = "%c[255,160,160,160]Baldie:\\n%c[default]Sponge Bob, square pants. Whoever spots him - kill him!",
+	condition = npc_alive_check, argument1 = 607}},
+	{news = 
+	{text = "%c[255,160,160,160]Mole:\\n%c[default]Looking for men to raid some catacombs.",
+	condition = npc_alive_check, argument1 = 302}},
+	{news = 
+	{text = "%c[255,160,160,160]Mole:\\n%c[default]Two stalkers are wanted to join in a raid into the catacombs.",
+	condition = npc_alive_check, argument1 = 302}},
+	{news = 
+	{text = "%c[255,160,160,160]Mole:\\n%c[default]Recruiting people for a sally into the tunnels.",
+	condition = npc_alive_check, argument1 = 302}},
+	{news = 
+	{text = "%c[255,160,160,160]Fanatic:\\n%c[default]Wolf, echo, there's a deal to talk over! How many times must I call you? Where are you?",
+	condition = npc_alive_check, argument1 = 22, argument2 = 6}},
+	{news = 
+	{text = "%c[255,160,160,160]Barkeep:\\n%c[default]Hey, remember it once and for good! I will not ever tell where the communication center is located!",
+	condition = npc_alive_check, argument1 = 500}},
+	{news = 
+	{text = "%c[255,160,160,160]Fanatic:\\n%c[default]Wolf, respond to me! We need to talk.",
+	condition = npc_alive_check, argument1 = 22, argument2 = 6}},
+	{news = 
+	{text = "%c[255,160,160,160]Petrenko:\\n%c[default]I repeat, admittance to the HQ is over valid passes or my personal approval only!",
+	condition = npc_alive_check, argument1 = 506}},
+	{news = 
+	{text = "%c[255,160,160,160]Sakharov:\\n%c[default]Whoever is in proximity of my laboratory and is not at all short in ammunition... Please, do me a personal favour. Exterminate those snorks at the swamps! They give me no rest!",
+	condition = npc_alive_check, argument1 = 902}},
+	{news = 
+	{text = "%c[255,160,160,160]Rafik:\\n%c[default]Will deal ya problems with competitors. Expensive. Look for Ara, ok? Gonna find me near Bar.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Rafik:\\n%c[default]Ey, who talk'a much 'bout me in bar? Gonna know - slay you, ok?",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Ivan Chickenheart:\\n%c[default]Rumours are about somebody going to the Scorcher... That's scary!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]They say Sakharov has got new detectors in stock!",
+	condition = npc_alive_check, argument1 = 902}},
+	{news = 
+	{text = "%c[255,160,160,160]Andriy Patriot:\\n%c[default]Во, млін, москалів понаїхало",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Yarik Rooster:\\n%c[default]There's some dope bumming around in the Dark Valley with a cool gun by him. If something happens to him - I'll buy the barrel, for sure!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]bacha:\\n%c[default]Around 2 a.m. today a \"Zaporozhets\" was hi-jacked. Colour: rust with milk. Has got no trunk cover and no doors. Location: approaches to the Bar from the Garbage side. About 1 a.m. a controller was noticed hanging around there, muttering about the jalopy being useless and all. If anybody sees the bastard - tell me. Reward guaranteed.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]bacha:\\n%c[default]A dead body is missing at the mercs' roadblock at the Warehouses. I'm sure to have murdered four of them, but there are only three bodies. The detectors locate only three bodies as well. Who took it, I wonder?",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]bacha:\\n%c[default]This damn Barkeep stripped me of 60 \"grand\" for repairing the outfit! And yet he didn't complete the job fully, so I had to pay 40 extra... This is by no means right!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Help me, folks! The Dark Valley! Taking heavy fire! Whoever is close - please, assist!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Doctor! Did anybody see Doctor? I'm at the swamps, injured heavily...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]What the heck is going on with me?! My skin is peeling off... Hair's coming out...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Khhh... Khill!!!...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]K... Khh... Crushhhhh!!!...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Farewell, lads!.. Will miss you!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Hrr... d-d-d-d... SOM....DY ...ELP!.....",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Mayday! Mayday! Hordes of mutants heading at us! Whoever in proximity, please, help! We aren't able to handle on our own!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Does anybody know, when the next Blowout is going to happen?",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]Has anybody got info if the Surge is to happen soon?",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Jora Joint:\\n%c[default]Weed has arrived! All those interested are welcome...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]Hidden:\\n%c[default]What's that crappy propaganda in the air, folks?! Where from?!!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Do you still consider yourselves to be right? Take a look around! You like it, don't you? You have found yourself comfortable here, haven't you? If so, why do you keep saying that the Zone is a penalty for mankind? Do you feel uneasy about those unrighteous? Have you got passion for justice? Are you willing to change the world and make it a better place? But maybe you have changed yourselves, haven't you? You have got so used to pain that you have become it's ambassadors in the world...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Everything is transient. Stare at the past - nothing but emptiness there. Take a look at the future - only horror and death await there. Why do you have to feel and foresee it? It is only about changing yourselves so that you may start feeling the Good coming from the Zone! And this will put an end to your torments...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Are you scared? The Zone can help you, can give advice...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Only the worthy ones will gain happiness! Do YOU think Surges to be a disaster for everything living? WE know how to make them an advantage! Become the worthy one! Gain your happiness!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Doesn't the Zone set you free? Isn't it wonderful here? You don't want to die here, do you? We can help you make friends with the Zone, start understanding Her benefits!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]The Zone keeps growing... You don't believe it? Take a look around you! Don't you see? It's INSIDE YOU already! What makes you keep opposing YOURSELVES? Make friends with the Zone! Stop being Her enemy!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Everything is decomposing... Aren't you happy with that? You keep living here, keep speeding up this decomposition. Flee away from the Zone, or become Her conductors to the stray outworld! The Zone is the only one to know the truth! You will never get truth from her miserable resemblance...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]You are drawn to HIM... But you are rude, deceitful and selfish! You are unworthy of HIM! Only humility and obedience will help you gain what you are longing for!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]HE knows everything! Those infidels will perish! HIS voice will lead us to victory!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]HE is the one to know your wishes. Do you consider yourselves worthy? Only those faithful will acquire happiness...",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Life is the least I can sacrifice to HIM! Flutter, you, infidels! As we have emerged to cleanse the world!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,160,160,160]ID not registered in the system:\\n%c[default]Brethren! We are one! We are HIS sons! Let everybody gain happiness so that no one remains hurt!",--[[
+	condition = true}},
+	{news = 
+	{text = "%c[255,40,40,255]Deathdoor:\\n%c[default]Ищется толковый моделлер, с опытом работы в Максе или Майе. Заинтересованным - стучать в личку, подробности обговорим при встрече.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,40,40,255]Dusty79:\\n%c[default]Использование плагинов на канале запрещено! Никому не интересно, что за музыку вы сейчас слушаете и в каком вы настроении.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,40,40,255]kamikaZze:\\n%c[default]Какая зараза опять пыталась сервак связи взломать?! Найду - лично отделю башку от тела!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,40,40,255]Metroid:\\n%c[default]Не уподобляйтесь идиотам, по любому поводу орущим в общем канале. Я о них позабочусь.",
+	condition = true}},
+	{news = 
+	{text = "%c[255,40,40,255]FEAR93:\\n%c[default]Внимание всем владельцам экзоскелетов! Найден косяк в драйверах сопроцессора правого манипулятора! За патчем ко мне в личку! Базиль Свистун, Вовка Куций и Леха Анжела Дэвис  могут спокойно курить в сторонке – у вас я недавно менял прошивку, там все нормуль!",
+	condition = true}},
+	{news = 
+	{text = "%c[255,40,40,255]kamikaZze:\\n%c[default]ВСЕМ! На Дикой Территории с бандюка снял ПДА убитого сталкера. Забит неотправленными 'Мэй Дэями' в связи с перегрузкой сети. Жаль парня. Народ, не забивайте эфир мутью, можете оказаться на его месте. Особо непонятливым заблокирую КПК. Сидор, Бармен и Очкарик также в курсе - не помогут."]]
+	condition = true}}
+}
+
+
+local fnames = {
+"Ruslan",
+"Sasha",
+"Serghey",
+"Slava",
+"Tolik",
+"Yura",
+"Bogdan",
+"Venyamin",
+"Vitaliy",
+"Vova",
+"Dima",
+"Ivan",
+"Kostya",
+"Lyosha",
+"Andrey",
+"Sanek",
+"Shurik",
+"Vadya",
+"Vasyan",
+"Vasek",
+"Vityuha",
+"Vetal",
+"Vovan",
+"Jorka",
+"Grishka",
+"Grishko",
+"Dimon",
+"Lekha",
+"Dimuha",
+"Jeka",
+"Fimka",
+"Ilyuha",
+"Kostyan",
+"Mitka",
+"Mikhail",
+"Mikha",
+"Mikhas",
+"Kolyan",
+"Tolyan",
+"Pavlukha",
+"Petrukha",
+"Stepka",
+"Stepukha",
+"Timokha",
+"Yuras",
+"Yashka",
+"Andrew",
+"Toha",
+"Arkasha",
+"Tyomka",
+"Boryan",
+"Bodya",
+"Andrey",
+"Anton",
+"Oleg",
+"Roman",
+"Aleksandr",
+"Serghey",
+"Anatoliy",
+"Yuriy",
+"Bogdan",
+"Veniamin",
+"Vitaliy",
+"Vladimir",
+"Dmitriy",
+"Ivan",
+"Konstantin",
+"Alksey",
+"Sanya",
+"Sanyok",
+"Artur",
+"Yashka",
+"Yarik",
+"Yara",
+"Slava",
+"Borya",
+"Borka",
+"Bogdan",
+"Slavik",
+"Vadim",
+"Vadya",
+"Vadik",
+"Valik",
+"Valera",
+"Shurik",
+"Vasya",
+"Vaska",
+"Vasko",
+"Venya",
+"Vitya",
+"Vitka",
+"Vitalik",
+"Vlad",
+"Vova",
+"Vovka",
+"Lyonya",
+"Seva",
+"Sevka",
+"Ghena",
+"Ghenka",
+"Gheorg",
+"Gosha",
+"Jora",
+"Gherman",
+"Gleb",
+"Grisha",
+"Aleks",
+"Grishka",
+"Grishko",
+"Danya",
+"Danila",
+"Danko",
+"Denis",
+"Dima",
+"Dimka",
+"Dmitro",
+"Jenya",
+"Leshka",
+"Jenka",
+"Egor",
+"Egorka",
+"Fima",
+"Vanya",
+"Vanka",
+"Igoryok",
+"Ilya",
+"Kostya",
+"Kostik",
+"Tolik",
+"Leva",
+"Lenya",
+"Lyonya",
+"Maks",
+"Matvey",
+"Mitya",
+"Misha",
+"Mishka",
+"Nikita",
+"Nik",
+"Anton",
+"Kolya",
+"Oleg",
+"Pasha",
+"Pashka",
+"Petro",
+"Petya",
+"Petka",
+"Roma",
+"Romka",
+"Rostik",
+"Toshka",
+"Rus",
+"Sava",
+"Semen",
+"Sema",
+"Seryoga",
+"Senya",
+"Stepan",
+"Styopa",
+"Tima",
+"Timka",
+"Artyom",
+"Fedor",
+"Fedya",
+"Fedka",
+"Filya",
+"Filka",
+"Edik",
+"Yurka",
+"Yurik",
+"Yurko",
+"Yasha"
+}
+
+local snames = {
+"Surgeon",
+"Spy",
+"Bison",
+"Beaver",
+"Bulldog",
+"Bull",
+"Sparrow",
+"Woodpecker",
+"Beast",
+"Snake",
+"Humpbacked",
+"Boar",
+"Carp",
+"Turbo",
+"Bedbug",
+"Cop",
+"Elk",
+"Patsiuk",
+"Boa",
+"Loaf",
+"Beaten",
+"Longleg",
+"Outrage",
+"Bolt",
+"Razor",
+"Diamond",
+"Jack",
+"Screw",
+"Dynamite",
+"Trump",
+"Knuckles",
+"Jamb",
+"Skinny",
+"Cross",
+"Hook",
+"Oaf",
+"Crowbar",
+"Panadol",
+"Feather",
+"Piston",
+"Fiver",
+"Tails",
+"Death",
+"Goner",
+"Sharper",
+"Ace",
+"Chisel",
+"Dummy",
+"Bodkin",
+"Tie",
+"Stub",
+"Row",
+"Fist",
+"Skull",
+"Pushover",
+"Goon",
+"Batiy",
+"Skeleton",
+"Rambo",
+"Bald",
+"Terminator",
+"Chapay",
+"Chinghiz",
+"Banana",
+"Stick",
+"Hole",
+"Dad",
+"Bai",
+"Bro",
+"Sicker",
+"Pinker",
+"Degree",
+"Spirit",
+"Stretcher",
+"Pariah",
+"Knuckles",
+"Burnt",
+"Trump",
+"Jamb",
+"Lout",
+"Goblin",
+"Moor",
+"Wailing",
+"Flop",
+"Dumpling",
+"Pepper",
+"File",
+"Fatass",
+"Block",
+"Vampire",
+"Jerk",
+"Blade",
+"Miser",
+"Doe",
+"Savage",
+"Cripple",
+"Mallet",
+"Braid",
+"Curved",
+"Dodger",
+"Baldy",
+"Bestial",
+"Protegee",
+"Local",
+"Roily",
+"Brake",
+"Monocular",
+"Bastard",
+"Stray",
+"Fop",
+"Rascal",
+"Dead",
+"Nutcase",
+"Blabber",
+"Jagged",
+"Selfer",
+"Blind",
+"Snot",
+"Dandy",
+"Capital",
+"Loony",
+"Dasher",
+"Lop-eared",
+"Joker",
+"Courser",
+"Rotten",
+"Rusty",
+"Wild"
+}
+
+local trade_templates = {
+"I want to sell ",
+"I would like to buy "
+}
+
+local what_trade = {
+"a PPSh-41 submachine gun with ammo. I will be ",
+"a \"Kalash\" and cartridges for it. Look for me ",
+"GPS beacons, same price as that of Sakharov, ",
+"a stalker outfit, used. I'll be ",
+"a PDA. Most likely to find me ",
+"a used PM pistol. Going to be ",
+"a battery for the walkie-talkie. See you ",
+"a sleeping bag for hiking. Meet me ",
+"bulbs for the flashlights, 5V. Ask for me ",
+"a transmission assembly for \"Zaporojets\". Find me ",
+"a vodka distillating machine. Look for me "
+}	
+
+local where_trade = {
+"at Cordon ",
+"in the Bar ",
+"at car factory ",
+"at the Army Warehouses ",
+"at Cordon ",
+"at Cordon, by the tunnel with \"Electros\" ",
+"at Cordon, by the collapsed bridge ",
+"at Cordon, near the rusted diesel locomotive ",
+"near Cordon ",
+"close to Cordon ",
+"at entrance to Cordon ",
+"in proximity of Cordon ",
+"close to Cordon ",
+"in proximity of Cordon ",
+"at the Garbage ",
+"at the Garbage, by the hangar ",
+"near the Garbage ",
+"in close proximity to the Garbage ",
+"at the Garbage entrance ",
+"not far from the Garbage ",
+"close to the Garbage ",
+"by the Garbage ",
+"at the Agroprom ",
+"at the Agroprom, by the Research Institute building ",
+"near the Agroprom ",
+"not far from the Agro Institute ",
+"in front of the Agroprom Research Institute ",
+"not far from the Agroprom ",
+"close to the Agroprom ",
+"in the vicinity of Agroprom ",
+"at Yantar ",
+"at Yantar, by the swamp ",
+"at the factory at Yantar ",
+"in the vicinity of Yantar ",
+"close to Yantar ",
+"on the way to Yantar ",
+"in proximity of Yantar ",
+"not far from Yantar ",
+"near Yantar ",
+"in the Dark Valley ",
+"near the Dark Valley ",
+"in the vicinity of the Dark Valley ",
+"in front of the Dark Valley ",
+"not far from the Dark Valley ",
+"in proximities of the Dark Valley ",
+"close to the Dark Valley ",
+"at the Army Warehouses ",
+"by the Army Warehouses ",
+"in the vicinity of the Army Warehouses ",
+"in front of the Army Warehouses ",
+"not far from the Army Warehouses ",
+"in proximities of the Army Warehouses ",
+"close to the Army Warehouses ",
+"near the abandoned village ",
+"in the vicinity of the abandoned village ",
+"in front of the abandoned village ",
+"not far from the abandoned village ",
+"close to the abandoned village ",
+"in proximity of the abandoned village ",
+"by the water tower in the abandoned village ",
+"in front of the water tower in the village ",
+"not far from the water tower in the abandoned village ",
+"close to the old water tower ",
+"by the water tower in the village ",
+"in the vivinity of the Bar ",
+"in front of the Bar ",
+"not far from the Bar ",
+"at the Barrier ",
+"in the vicinity of the Barrier ",
+"in front of the Barrier ",
+"close to the Barrier ",
+"by the Barrier ",
+"near the Barrier ",
+"at the \"Rostok\" factory ",
+"by the \"Rostok\" plant ",
+"in the vicinity of the \"Rostok\" factory ",
+"in front of the \"Rostok\" ",
+"near the \"Rostok\" factory ",
+"close to the \"Rostok\" plant ",
+"in proximity of the \"Rostok\" factory ",
+"near the \"Duty\" HQ ",
+"in the vivinity of the \"Duty\" checkpoint ",
+"in front of the \"Duty\" checkpoint ",
+"not far from the \"Duty\" checkpoint ",
+"by the \"Duty\" checkpoint ",
+"near the \"Duty\" checkpoint ",
+"by the entrance to the \"Freedom\" base ",
+"in the vicinity of the \"Freedom\" base ",
+"in front of the \"Freedom\" base ",
+"not far from the \"Freedom\" base ",
+"near the entrance to the \"Freedom\" base ",
+"close to the \"Freedom\" base ",
+"at the car factory ",
+"near the car factory ",
+"close to the car factory ",
+"in front of the car factory ",
+"by the car factory ",
+"in the vicinity of the car factory ",
+"on the road to the car factory ",
+"at the farm ",
+"by the farm ",
+"in proximity of the farm ",
+"in front of the farm ",
+"not far from the farm ",
+"close to the farm ",
+"near the farm ",
+"by the scientists' camp ",
+"close to the scientists' lab ",
+"not far from the scientists' bunker ",
+"near the ecologists' camp' ",
+"by the entrance to the \"Yantar\" factory building ",
+"close to the gates of the \"Yantar\" factory "
+}
+
+local news_mat={
+"Fuck! ",
+"That's a mess. ",
+"That's shit! ",
+"Fucken shit! ",
+"Damn it... ",
+"Fucking ass! ",
+"Screw it... ",
+"To hell with it! ",
+"Oh, heck! ",
+"Shit! ",
+"Holy shit! "
+}
+
+local news_when={
+"Today ",
+"An hour ago ",
+"Recently ",
+"A couple of minutes ago ",
+"Just now ",
+"Half an hour ago "
+}
+
+local news_text={
+"a pack of blind dogs appeared. ",
+"a pack of pseudodogs appeared. ",
+"a pack of vicious pseudodogs appeared. ",
+"a big pack of blind dogs appeared. ",
+"a controller appeared, damn it. Whoever nearby - beware! ",
+"a controller appeared. ",
+"many fleshes were seen. ",
+"a flesh was seen. ",
+"a number of boars appeared. ",
+"a number of wild boars appeared. ",
+"a couple of bloodsuckers was noticed. ",
+"a bloodsucker was noticed. ",
+"an army heli was seen barraging. Another raid is to follow, most probably... ",
+"a military helicopter was seen shoot at somebody and fly away. Stay alert. ",
+"a military heli was noticed flying north. ",
+"military radio transmission was intercepted. They plan some raids in a number of regions. Stay alert. ",
+"soldiers' radio talks were intercepted. Another raid at Agroprom is to follow soon. It is sure to be a failure, but don't poke in there for some time. ",
+"the martinets started a clean-up operation. ",
+"the fucken military started a clean-up operation. Stay outta there. ",
+"some rodents were noticed. ",
+"rodents were seen, keep out. ",
+"a huge rodent was seen. ",
+"a snork almost choked me! I hardly got away! ",
+"some snorks were noticed. Luckily they didn't notice me. ",
+"a couple of snorks was seen. ",
+"some zombies were monitored. A controller may be present there. ",
+"some strange shadow was noticed. Not a bloodsucker's, but who knows. So many monsters around, damn them... ",
+"a fight with bandits took place. ",
+"some sniper shot at me. Take care there. ",
+"a wave of mutants happened. We hardly managed to shoot them down. Two guys of ours died... ",
+"mutants nearly tore us to pieces. ",
+"an everted corpse was spotted. I didn't check it closer, there may be an anomaly. ",
+"a withered, bloodless body was found. Maybe a bloodsuckers' lair is somewhere nearby. ",
+"a horrible scream was heard. Better kepp out of there... ",
+"a stalker, all covered with blood, was seen being dragged on the ground. Possibly, by a bloodsucker... ",
+"a pack of dogs was noticed dragging a stalker's corpse into some bushes. Be careful there. ",
+"a combat with bandits took place. All down. ",
+"we stumbled upon a military patrol and had to shoot them down. Don't poke in there - a raid is sure to follow. ",
+"ran into some patrol soldiers and had a fight. All martinets're down. Keep out of there - the military are sure to perform a raid. ",
+"a snork was seen tear a stalker into pieces. Plenty of mosters here, damn... ",
+"many new anomalies appeared. Beware! "
+}
+
+
+local horror_news = {
+"Folks... Has anybody got some vodka or alcohol?",
+"It really got me today... Tearing my soul apart.",
+"It makes me sick... I'm sure to puke...",
+"More zombies will appear, for sure...",
+"I'm sure somebody ain't gonna make it out today. It really hits the brain hard...",
+"C'mon guys, we have to keep strong. As soon as it's over - time to hunt for artifacts. Who's coming with me?",
+"My friend got zombified a moment ago... Damn it! I told him to keep out!.. Had to shoot him down. Sorry, bro...",
+"To hell with it! When it's over, I gonna get some fresh artifacts.",
+"Fuck this Zone and those artifacts! I cannot stand it any longer!",
+"Damn connection! Malfunctioning all the time!",
+"What the hell is wrong with the network?!",
+"The connection is out of service again...",
+"Problems with connection... Again..."
+}
+
+
+-- 04:30 - 07:00
+local morning_templates = {
+"It's dawning, folks... so beautiful!",
+"Day is breaking...",
+"Look, guys, it's dawning already. Time to hunt for artifacts, I guess. It's way less chance to run across something now, not like nighttime",
+"It's daylight. Let's move, it's more or less safe now.",
+"Wake up, lads! Morning has come!",
+"Hey, lads! It's daylight at last! I've got tired of trembling with fear duting the night. Better when it's broad daylight... tremble...",
+"Does anybody hear me? A group of our lads appears to be missing. They were supposed to get back from Agroprom by morning, but haven't turned up yet. We're out for searches in an hour.",
+"Who invented morning, damn it... Boozing all night long... Chef, bastard, got some bad vodka again. \"Freedom\", let's go on sleeping. The raid against the \"Duty\" base may wait...",
+"I wish you saw this dawn at Yantar, lads! This is wonderful! Both beautiful and scary... Snorks' corpses drifting calmly in the waters of the lake, gently lit with the beams of the newborn sun...",
+"The night has passed and I'm yet alive! Alleluia!",
+"The night is over. Welcome, the new day!",
+"God bless! The sun is rising! New fights are to come!",
+"Hi, dudes! Good morning, citizens of the Zone! Ha-ha!",
+"Oh, man... Has anybody got just anything against hangover?.. Too much booze yesterday...",
+"Filya, you're sick! What have you put in the weed yesterday?! My head seams splitting in halves!",
+"Hey! Is it morning already? Were's everybody?"
+}
+
+-- 20:30 - 22:00
+local evening_templates = {
+"Damn, lads, you do whatever you like, but I ain't going for habar today. It's almost night already...",
+"No, I'm not going anywhere. It's too late, monsters are about to go out for hunting...",
+"It's sunset already... Head back, folks, it's getting unsafe in the Zone.",
+"Look, guys... Better you go... against bloodsuckers... alone. Damn extreme tourists.",
+"So? Is anybody coming with me against pseudodogs? I'm afraid to sleep in the dark tent, what if... this dark one... asks for water?.. I better bum around in the outside.",
+"The moon is about to rise... I'm not in time to reach the camp... Anybody close, lads? I can feel some creature following me.",
+"Attention! The scientists tell about suspicious activity of mutants at Yantar. Everybody, stay in camps!",
+"Another day is over. And I'm still alive! Nice!",
+"The day is almost over, but the acquired habar is next to nothing. Still it's too scary to go out alone nighttime... Anybody wanna join?",
+"Folks! Is anybody in proximity? C'mon, join! Better wait the night over in company.",
+"Loners! Come, join us to wait over the night!",
+"Does anybody know a place for an overnight stay at Yantar? C'mon, advise me! I'm here for the first time!",
+"Nighttime at Yantar again... Damn...",
+"Whoever and whatever plans you've got - I don't give a shit! I gonna booze all night long.",
+"Bros! Help! Some monster is up for me! I ain't gonna make it on my own!"
+}
+
+
+local PDA_errors = {
+"Signal unstable.",
+"Critical error. Establishing connection...",
+"Error! Transmitter calibration required.",
+"Connection lost. Try again later.",
+"Error when receiving the message! Try again.",
+"Connection timed out. Trying to reconnect...",
+"Unidentified error. Connection suspended...",
+"Critical error. Out of memory. System will now reboot...",
+"Critical error. Reconnecting to the server..."
+}
+
+
+local message_errors = {
+"<??????????????????/>",
+"/ltrch/fcs0¶¬qВЪЧgлЪkЬ?DрЦјєй™ЕїьUb/insrsid14306805/charrsid6240970",
+"hЉ§Љ§€Љз€Ћ(‰",
+"Ц2K%ЖФZ=RЉ9G±eHХ”1ҐSRkиUUХ4MУ4ЃРђ",
+"NЦЫGoV~e©ИКВ8?W”±Ќх©Rе",
+"zt„К9ґe",
+"F1Ћ•ыьЪъњеЪчwЖ–Пњй",
+"mFђQА+иь1Ї‹A;gрйжяоqЧёКDёЫzЃя:СXЩфЯѓcеZL3Ят2'xН3•ЇзЦsFЇ†",
+"ІЉЙ'ЦО/›с#‚ЕfаЙd<ЪЧgлЪkЬ?ПC‡ZЭЛr$mёТЁ",
+"¤аVЬ иГўoПо›y_жbјn {¬‰н'S",
+"<unknown codepage/>",
+"_yФБў]кBbo3Ш[ЙіZї-ЙDрЦјєй™ЕїьUbNVхJ",
+"",
+";D^mRДзЧ]ЩЦ]йЇLNп©°Гw2Јj]:»IГ­‹ис5ў0ј•ЯiЁъ"
+}
+
+
+-- Смерть Семецкого (тексты)
+local level_text = {
+"Cordon",
+"Garbage",
+"Agroprom RI",
+"Dark Valley",
+"'Rostok' plant",
+"Wild Territory",
+"Army Warehouses",
+"Yantar",
+"Radar",
+"Pripyat"
+}
+
+
+local sem_death_komment = {
+"Yury has kicked the bucket again! Good omen!",
+"Semetskiy got choked! The raid is sure to be generous!",
+"Too often lately... Semetskiy, I mean... Is that a warning, I wonder?",
+"Well... I gonna make a raid into the Zone. Semetskiy died, so luck will be with us.",
+"Is it true that death of Semetskiy is a good omen?",
+"Hey! Quit drinking and let's go for artifacts! Who's with me?"
+}
+
+
+
+-- Функции выдачи сообщений и мелкие вспомогательные
+
+-- Получаем имя персонажа
+function gen_names_strings()
+	local fname = fnames[math.random(table.getn(fnames))]
+	local sname = snames[math.random(table.getn(snames))]
+	local name_string = fname.." "..sname
+	return name_string
+end
+
+
+-- Сообщения о торговле
+function show_news_trade()
+if post_message_prob2 == 1 then
+	trade_maseges = trade_templates[math.random(table.getn(trade_templates))]
+	if trade_maseges ~= nil then
+		local from = gen_names_strings()
+		local what_trade = what_trade[math.random(table.getn(what_trade))]
+		local where_trade = where_trade[math.random(table.getn(where_trade))]
+		local news_text = "%c[255,160,160,160]".. from ..":\\n%c[default]".. trade_maseges .. what_trade .. where_trade
+		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(0,0,83,47), 0, news_showtime)
+	end
+end
+end
+
+
+-- Просто
+function show_news_another()
+if post_message_prob == 1 then
+	local m_post_message = noname_teamletes[math.random(table.getn(noname_teamletes))]
+	if m_post_message.news ~= nil then
+		if m_post_message.news.condition ~= nil and (m_post_message.news.condition) ~= true then
+			local func = m_post_message.news.condition
+			local arg1 = nil
+			local arg2 = nil
+			if m_post_message.news.argument1 ~= nil then arg1 = m_post_message.news.argument1 end
+			if m_post_message.news.argument2 ~= nil then arg2 = m_post_message.news.argument2 end
+			if func(arg1, arg2) ~= true then return end
+		end
+		local news_text = m_post_message.news.text
+		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), 0, news_showtime)
+	end
+end
+end                
+
+
+-- Долг
+function show_news_dolg()
+if post_message_dolg == 1 then
+	local m_post_dolg = dolg_news[math.random(table.getn(dolg_news))]
+	if m_post_dolg.news ~= nil then
+		if m_post_dolg.news.condition ~= nil and (m_post_dolg.news.condition) ~= true then
+			local func = m_post_dolg.news.condition
+			local arg1 = nil
+			local arg2 = nil
+			if m_post_dolg.news.argument1 ~= nil then arg1 = m_post_dolg.news.argument1 end
+			if m_post_dolg.news.argument2 ~= nil then arg2 = m_post_dolg.news.argument2 end
+			if func(arg1, arg2) ~= true then return end
+		end
+		local news_text = "%c[255,255,0,0]\"Duty\":\\n%c[default]" .. m_post_dolg.news.text
+		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,141,83,47), 0, news_showtime)
+	end
+end
+end
+
+
+-- Свобода
+function show_news_freedom()
+if post_message_freedom == 1 then
+	local m_post_freedom = freedom_news[math.random(table.getn(freedom_news))]
+	if m_post_freedom.news ~= nil then
+		if m_post_freedom.news.condition ~= nil and (m_post_freedom.news.condition) ~= true then
+			local func = m_post_freedom.news.condition
+			local arg1 = nil
+			local arg2 = nil
+			if m_post_freedom.news.argument1 ~= nil then arg1 = m_post_freedom.news.argument1 end
+			if m_post_freedom.news.argument2 ~= nil then arg2 = m_post_freedom.news.argument2 end
+			if func(arg1, arg2) ~= true then return end
+		end
+		local news_text = "%c[255,0,255,0]\"Freedom\":\\n%c[default]" .. m_post_freedom.news.text
+		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,94,83,47), 0, news_showtime)
+	end
+end
+end
+
+
+-- полностью рандомные
+function show_news_random()
+if post_message_random == 1 then
+	news_random = news_when[math.random(table.getn(news_when))]
+	if news_random ~= nil then
+		local from = gen_names_strings()
+		local where = where_trade[math.random(table.getn(where_trade))]
+		local text = news_text[math.random(table.getn(news_text))]
+		local news_mat = news_mat[math.random(table.getn(news_mat))]
+		local news_text = "%c[255,160,160,160]".. from ..":\\n%c[default]" .. news_mat .. news_random .. where .. text
+		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), 0, news_showtime)
+	end
+end
+end
+
+
+-- Хоррор
+function show_news_horror()
+if post_message_horror == 1 then
+	local horror_text = horror_news[math.random(table.getn(horror_news))]
+	if horror_text ~= nil then
+		local from = gen_names_strings()
+		local news_mat = news_mat[math.random(table.getn(news_mat))]
+		local news_text = "%c[255,160,160,160]".. from ..":\\n%c[default]" .. news_mat .. horror_text
+		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), 0, news_showtime)
+	end
+end
+end
+
+
+-- Из амк, переделано, старт
+function on_daytime()
+if post_message_prob == 1 then
+
+-- ночь, рассвет, закат...
+	if news_main_data.game_minutes()  then
+		local m_h = level:get_time_hours()
+		local m_m = level:get_time_minutes()
+		local m_t = m_h * 60 + m_m
+          
+		if (m_t >= 4*60+30 and m_t <= 6*60) then 
+			-- 04:30 - 06:00 Рассвет
+			local d_text = morning_templates[math.random(table.getn(morning_templates))]
+			local from = gen_names_strings()
+			local news_text = "%c[255,160,160,160]".. from ..":\\n%c[default]" .. d_text
+			db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), 0, news_showtime)
+
+		elseif (m_t >= 20*60+30 and m_t <= 22*60) then 
+			-- 20:30 - 22:00 Закат
+			local d_text = evening_templates[math.random(table.getn(evening_templates))]
+			local from = gen_names_strings()
+			local news_text = "%c[255,160,160,160]".. from ..":\\n%c[default]" .. d_text
+			db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), 0, news_showtime)
+
+		elseif (m_t >= 23*60 and m_t <= 24*60) or (m_t >= 0*60 and m_t <= 4*60) then 
+			--23:00 - 04:00 Ночь            
+			show_news_random()
+                    
+		end
+          
+	end
+end
+end
+-- Из амк, переделано, финиш
+
+-- Сеть глючит
+function show_PDA_error()
+if post_message_PDA_error == 1 then
+	local PDA_err = PDA_errors[math.random(table.getn(PDA_errors))] 
+		if PDA_err ~= nil then 
+		db.actor:give_game_news("%c[255,255,255,0]PDA\\n%c[default]" .. PDA_err, "ui\\ui_iconsTotal", Frect():set(498,235,83,47), 0, 5000) 
+		end
+end
+end
+
+
+-- Сообщения с ошибками
+function show_news_error()
+if post_message_PDA_error == 1 then
+	local msg_err1 = message_errors[math.random(table.getn(message_errors))]
+	local msg_err2 = message_errors[math.random(table.getn(message_errors))]
+		if msg_err1 ~= nil and msg_err2 ~= nil then 
+		local news_text = "%c[255,160,160,160]".. msg_err1 ..":\\n%c[default]" .. msg_err2
+		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), 0, news_showtime)
+		end
+end
+end
+
+
+-- Семецкий умер
+function semetskjy_death()
+if (post_message_semetskjy_death == 1) and (math.random() < sem_death_message_prob) then
+	local s_level = level_text[math.random(table.getn(level_text))]
+	local sem_death_string = "Yury Semetskiy".." (Loner)"..". "..s_level.."."
+	local news_text = "%c[255,160,160,160]".."Stalker dead:".."\\n%c[default]"..sem_death_string
+	db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(0,658,83,47), 0, news_showtime)
+		if math.random() < sem_komm_message_prob then
+			local from = gen_names_strings()
+			local sem_komm_text = sem_death_komment[math.random(table.getn(sem_death_komment))]
+			local news_text = "%c[255,160,160,160]".. from ..":\\n%c[default]" .. sem_komm_text
+			db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), math.random(1000,5000), news_showtime)		
+		end
+
+end
+end
+
+
+-- Сообщения при начале Выброса
+-- Выброс - помогите! (тексты)
+local group_type = {
+1, -- Одиночки
+2, -- Долг
+3 -- Свобода
+}
+
+
+local who_say_group_text = {
+" here.",
+" reporting.",
+", need help!"
+}
+
+
+local who_say_dolg_text = {
+"Quad 1",
+"Quad 2",
+"Quad 3",
+"Quad 4",
+"Quad 5",
+"Quad 6",
+"Quad 7",
+"Quad 8"
+}
+
+
+local who_say_freedom_text = {
+"Raid-squad",
+"Expedition squad",
+"Patrol squad",
+"Escort squad"
+}
+
+
+local lone_query_help_text = {
+"Where can we take cover here? Help!",
+"Folks, please! Where's the closest shelter? I'm newbie here.",
+"Damn it... I'm screwed...",
+"Fucken shit! I ain't in time! Where can I teke cover nearby?",
+"Damn! DAMN! DAMN!!! What will we do now?!"
+}
+
+
+local group_query_help_text = {
+"Detached communication line lost. Unable to continue operation in the area. Requesting for evacuation.",
+"Get us outta here! Urgently! The communication line is almost down!",
+"Requsting immediate evacuation. Electronic equipment running faulty.",
+"Evacuate us! Quickly!",
+"Unable to take cover on our own. The equipment is getting damaged. Urgent evacuation required!",
+"No shelter in the specified area! Get us out of here quickly!",
+"HQ! Damn! Evacuate us urgently! The detached communication line is down already!",
+"Mayday! Mayday! Requesting immediate evacuation! Mission failed! Repeat: mission failed!",
+"Get us out of here! Make it quick! The equipment is going down! Awaiting for transport!",
+"The area has to be abandoned - no shelter present. Requesting for transport for evacuation!",
+"Shit! HQ! What moron planned the operation just before the Blowout?! Get us out! Quick!",
+"No shelter nearby. The outfit is insufficient to remain in field. Get us out urgently!"
+}
+
+
+local anser_query_help_text = {
+", don't panic. There's a place to take cover for you. Here are the coordinates...",
+"! Calm down! There's a shelter nearby. Receive the coordinates...",
+", stay calm. If you are a good runner - you'll make it to the cover. Here are the coordinates...",
+", look, send me your coordinates. So that I know where to go for habar. Ha-ha-ha!",
+", sorry, I cannot help you. Good luck."
+}
+
+
+local anser_yes_query_help_text = {
+"don't panic! The transport is under way. Keep waiting.",
+"stay calm! The car is out for you. Proceed towards it.",
+"help is under way. Proceed to the evacuation point.",
+"the transport will be at the point in two minutes. Hurry up there.",
+"proceed to the evacuation point quickly! You'll be picked up there in a couple of minutes."
+}
+
+
+local anser_no_query_help_text = {
+"sorry, but there's nobody to help you. Use your own discretion. May the Zone take mercy on you...",
+"sorry, there will be no evacuation. The transport has been destroyed. God help you...",
+"no evacuation will take place. The crew has been killed. Act as you think best. Good luck.",
+"the evacuation has been cancelled. The transport can not get through to you. Act on your own.",
+"the aircraft failed to reach you due to strong anomalous activity. We're unable to help you."
+}
+
+
+local yes_query_help_text = {
+"Hurry up! We're waiting!",
+"Quickly! We are heading towards you.",
+"Make it quick! We're at the point.",
+"Damn you! Hurry! We are in position!",
+"C'mon, c'mon! Quick! It's about to break out!"
+}
+
+
+local no_query_help_text = {
+"Fuck! What the hell?! There's no place to take cover here!!!",
+"Let the Zone get you! Think something out! WE'RE DYING HERE!!!",
+"Well... Maybe we meet once again... I'll remember the incident!",
+"Damn it! We'll try on our own. But there's little chance...",
+"Let zombies slay you! What will we do?! We ain't gonna make it!"
+}
+
+
+--Выброс - помогите! (общая)
+function show_news_vibros()
+if post_message_vibros_news == 1 then
+local msg_type = ""
+local query_help_text = ""
+local who = ""
+local say = ""
+local say = ""
+local anser_type = 0
+local anser_text = ""
+local news_text = ""
+
+	local gr_type = group_type[math.random(table.getn(group_type))] 
+		if gr_type ~= nil then
+			if gr_type == 1 then
+				lone_query_help_vibros()
+				return
+				
+			elseif gr_type == 2 then
+				msg_type = "%c[255,255,0,0]\"Duty\":\\n%c[default]"
+				query_help_text = group_query_help_text[math.random(table.getn(group_query_help_text))]
+				who = who_say_group_text[math.random(table.getn(who_say_group_text))]
+				say = who_say_dolg_text[math.random(table.getn(who_say_dolg_text))]
+				
+			elseif gr_type == 3 then
+				msg_type = "%c[255,0,255,0]\"Freedom\":\\n%c[default]"
+				query_help_text = group_query_help_text[math.random(table.getn(group_query_help_text))]
+				who = who_say_group_text[math.random(table.getn(who_say_group_text))]
+				say = who_say_freedom_text[math.random(table.getn(who_say_freedom_text))]
+				
+			end
+		end
+		
+		if query_help_text ~= nil and who ~= nil and say ~= nil and msg_type ~= nil then
+			news_text = msg_type .. who .. " " .. say .. ". " .. query_help_text
+			
+			if gr_type == 2 then
+				db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,141,83,47), 0, news_showtime)
+			elseif gr_type == 3 then
+				db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,94,83,47), 0, news_showtime)
+			end
+			
+			if math.random() < 0.5 then
+				anser_type = 1
+				anser_text = anser_yes_query_help_text[math.random(table.getn(anser_yes_query_help_text))]
+			else 
+				anser_type = 0
+				anser_text = anser_no_query_help_text[math.random(table.getn(anser_no_query_help_text))]
+			end
+				
+			if anser_text ~= nil then
+				news_text = msg_type .. say .. ", " .. anser_text
+				if gr_type == 2 then
+					db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,141,83,47), math.random(2000,4000), news_showtime)
+				elseif gr_type == 3 then
+					db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,94,83,47), math.random(2000,4000), news_showtime)
+				end
+			end
+				
+			if anser_type ~= nil and anser_type == 1 then
+				query_help_text = yes_query_help_text[math.random(table.getn(yes_query_help_text))]
+			elseif anser_type ~= nil and anser_type == 0 then
+				query_help_text = no_query_help_text[math.random(table.getn(no_query_help_text))]
+			end
+				
+			if query_help_text ~= nil then
+				news_text = msg_type .. query_help_text
+				
+				if gr_type == 2 then
+					db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,141,83,47), math.random(5000,7000), news_showtime)
+				elseif gr_type == 3 then
+					db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,94,83,47), math.random(5000,7000), news_showtime)
+				end
+			end
+			
+			if math.random() < 0.3 and anser_type == 1 then
+				anser_text = anser_no_query_help_text[math.random(table.getn(anser_no_query_help_text))]
+				if anser_text ~= nil then
+					news_text = msg_type .. say .. ", " .. anser_text
+					
+					if gr_type == 2 then
+						db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,141,83,47), math.random(8000,10000), news_showtime)
+					elseif gr_type == 3 then
+						db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,94,83,47), math.random(8000,10000), news_showtime)
+					end
+				end
+					query_help_text = no_query_help_text[math.random(table.getn(no_query_help_text))]
+				if query_help_text ~= nil then
+					news_text = msg_type .. query_help_text
+					
+					if gr_type == 2 then
+						db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,141,83,47), math.random(11000,12000), news_showtime)
+					elseif gr_type == 3 then
+						db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,94,83,47), math.random(11000,12000), news_showtime)
+					end
+				end
+				
+			end
+			
+		end
+end
+end
+
+
+--Выброс - помогите! (одиночки)
+function lone_query_help_vibros()
+	local from1 = gen_names_strings()
+	local from2 = gen_names_strings()
+	local msg_type = "%c[255,160,160,160]".. from1 ..":\\n%c[default]"
+	local query_help_text = lone_query_help_text[math.random(table.getn(lone_query_help_text))]
+	if query_help_text ~= nil and from1 ~= nil and from2 ~= nil and msg_type ~= nil then
+		local news_text = msg_type .. query_help_text
+		db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), 0, news_showtime)
+	end
+	if math.random() < 0.8 then
+		local anser_help_text = anser_query_help_text[math.random(table.getn(anser_query_help_text))]
+		if anser_help_text ~= nil and from1 ~= nil and from2 ~= nil then
+			local news_text = "%c[255,160,160,160]".. from2 ..":\\n%c[default]" .. from1 .. anser_help_text
+			db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(498,47,83,47), math.random(2000,4000), news_showtime)
+		end
+	end
+end
+
+
+--Диалоги
+
+local dialog_msg_texts = {
+{news =
+{ dialog = {4,
+			1,"freedom"," ","","Looking for a girl... Just any...",
+			2,"freedom"," ","","They say Chef has got some magazines with chicks' photoes...",
+			3,"freedom"," ","","And Skinflint is rumoured to have some videos...",
+			4,"others","","","Look, guys, why don't you discuss that in private? Stop cluttering up the communication line. BTW... Has Chef REALLY got something?"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","ID not registered in the system","","Mmmmm... MURDER-R-R-R!!!...",
+			2,"others","","","Shit! Another one got his brain scorched...",
+			1,"others","ID not registered in the system","","Kh... Kh... KILL-L-L!!!...",
+			2,"others","","","Somebody, please, shoot down the poor bastard!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Folks! I've seen a chick!",
+			2,"others","","","WHERE?!",
+			1,"others","","","At the Freedomer's HQ.",
+			2,"others","","","I see. So, the weed must've been pungent."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","Hidden","Marych",", don't forget! We're going to the lab tomorrow! You know where to find me.",
+			2,"others","Hidden","","Damn... Well, alright, so be it. But I've got a bad feeling about it."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Look, guys! They are offering me some cool barrel here! Very cheap! Will I buy it?",
+			2,"others","",1,", don't be an idiot! It's an old swindle. You are sure to waste your money!",
+			1,"others","","","Is it? Ok, thanks for warning me."},
+condition = true}},
+{news =
+{ dialog = {3,
+			1,"others","","","Who knows where I may find Swamp Doctor?",
+			2,"others","",1,", what do you need him for?",
+			1,"others","","","What do you mean \"what for\"? To get treated...",
+			2,"others","","","Yeah, just imagine that I believe you. Anyway, if you really need him - ask for him in the Bar. But he's not a frequenter there.",
+			3,"others","Barkeep","","How many times must I tell you! I don't know where he lives! And if I knew, I wouldn't tell you anyway!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Oh... Lads, help me! I seem to have broken my leg. Won't make it to the camp...",
+			2,"others","","","How unlucky... Where are you now?",
+			1,"others","","","At the swamps, by the flooded village.",
+			2,"others","",1,", got you, I'm rather close. Wait, I'm coming!",
+			1,"others","",2,", hurry up, please, I feel sick and almost fainting... And there's something rustling in the bushes... Scary..."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","Lionya Ask","","Folks! Why are there no chicks in the Zone?",
+			2,"others","","","Damn you! Shut up! Don't remind about that!"},
+condition = true}},
+{news =
+{ dialog = {3,
+			1,"others","","","Need your advice, lads... I've found something like a rock, but rather strange. And it's radioactive. Has anybody got an idea what it is?",
+			2,"others","",1,", congratulations to you! You have found a radioactive rock!",
+			1,"others","",2,", stop bullshitting me! D'you think I cannot tell gold from crap?!",
+			2,"others","","","Who knows...",
+			3,"others","",1,", stop chewing the rag! Take the stone to the eggheads at Yantar, they'll determine what it is for you.",
+			1,"others","",2,", I'll keep an eye for you.",
+			2,"others","","","Piss off, moron! Don't get lost on your way."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","Lionya Ask","","Look, folks, are there no chicks in the Zone at all?!?",
+			2,"others","","","But there are! I'm telling you!",
+			1,"others","Lionya Ask",2,", really? Where?!",
+			2,"others","","","Pay a visit to Skinflint at the Warehouses, he may lend you one from his store... A blow-up one, if you know what I mean :)",
+			1,"others","Lionya Ask","","The hell with you! I almost got excited..."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Listen, guys, I've acquired some strange stuff... It seems an ordinary stone, but has got a strange glow coming from the inside and it's got almost no weight! Has anybody met anything alike? Is it harmful?",
+			2,"others","",1,", nope, I haven't ever heard of anything like that.",
+			1,"others","","","Ok. Thanks anyway. I'll have to take it to Yantar to have it examined by Sakharov. I hope it doesn't kill me..."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","Lionya Ask","","So hard life is with no girls in the Zone... Maybe there are some? Somewhere?",
+			2,"others","","","Anybody, please, make this hornie bastard shut up!!!",
+			1,"others","Lionya Ask",2,"! Why are you so annoyed? It's really hard for me without women!",
+			2,"others","","Lionya Ask",", break your PDA against some wall!!! Or rather against your head! I'm sick and tired of you!",
+			1,"others","Lionya Ask","","How impolite of you! I'm not willing to talk to you any more!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"dolg"," ","","To all! According to our information, a well armed group of militants is heading towards the \"Agroprom\". It may be either mercs or military stalkers. Additional info is required. Whoever knows anything - contact us. We'll pay back.",
+			2,"others","","","They ain't mercs, for sure. They got deployed by a helicopter.",
+			1,"dolg"," ","","Is the info reliable? We considered them to be foreign mercenaries.",
+			2,"others","","","The info's trustworthy, they are not foreign mercs at all. They got into combat with \"goblins\" near the swamps. Those idiots considered themselves tough enough for a quick foray for loot, but got their asses kicked. I've discovered one WIA in the bushes there.",
+			1,"dolg"," ",2,", has the wounded been interrogated? Delivered to the nearest \"Duty\" base? If not - do that immediately!",
+			2,"others","","","I didn't get that. Who are you? My father? I don't give a shit about your orders! I ain't a dutyer but a free stalker. Fuck off! I ain't gonna tell anything more!",
+			1,"dolg"," ",2,", awfully sorry. I thought you were one of us. On behalf of \"Duty\" commanders I thank you for your good cooperation.",
+			2,"others","","","You are welcome. About that wounded... He kicked off on my hands."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","Barkeep",", regarding that goon you've talked about - he's wasted. But certain difficulties were experienced. Will you increase the reward?",
+			2,"others","Barkeep","","Drop at my place, we'll handle that.",
+			1,"others","","","Deal, then."},
+condition = true}},
+{news =
+{ dialog = {3,
+			1,"others","","","Don't play cards with Bilbo, folks! He swindles!",
+			2,"others","Bilbo","","What the hell are you bullshitting about?! What makes you think I swindle?",
+			1,"others","","","Bastard! You let me win only one time to get me started! I'm telling, you're sharping!",
+			2,"others","Bilbo",1,", you, gooner! Learn how to play well before you play with normal lads!",
+			1,"others","","Bilbo",", wanna say I can't play?! I bet, I gonna make you eat those cards next time! Shithead!",
+			2,"others","Bilbo","","What did you say, bitch?!!\nI'll bury you next time we meet! Better keep your eyes open and stay away from me!",
+			1,"others","","","Bla-bla-bla! Fuck you!!! Fancy an open fight in the Arena? Lets \"talk it over\" there!",
+			3,"others","","","Shut up, both of you! Damn gladiators!\nBilbo, everyone knows you're a swindler. Why keep denying? There's a que of those willing to choke you! It's only newbies who haven't heard of you, that you can cheat now. Stop rattling the sabres, guys, and stop contaminating the air before your PDAs get blocked.",
+			2,"others","Bilbo","","Aha! Aha! Go to it!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Look, folks... It's so beautiful around here... Peace and quiet... Blessed moments of calmness...",
+			2,"others","","","Heh... Are you sure? Some mutant will jump out from the bushes, grab your ass... Will you keep singing the same song? Ha-ha...",
+			1,"others","","","Right you are. Probably, I've gone limp. Too tired, I guess..."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Guys! Can abnybody lend me some coffee?",
+			2,"others","",1,", are you nuts?! What coffee?! That sounds crazy!",
+			1,"others","","","Well... I thought... just maybe, you know..."},
+condition = true}},
+{news =
+{ dialog = {4,
+			1,"freedom"," ","","Boar, I'm Condor. Following you.",
+			2,"freedom"," ","","Condor, I'm Boar. Why are you following me?",
+			1,"freedom"," ","","As ordered by Coon.",
+			2,"freedom"," ","","Condor, I don't get it. Who is Coon?",
+			1,"freedom"," ","","Boar, you're a jackass, understand?!",
+			2,"freedom"," ","","Affirmative. I'm Jackass. You're Condor. But who is Coon?",
+			1,"freedom"," ","","Boar, damn you! You're fucking nuts! Shut up and keep going silent! Over.",
+			3,"others","","","What was all that?",
+			4,"others","","","Some shithead freedomers. Stupid morons!"},
+condition = true}},
+{news =
+{ dialog = {3,
+			1,"others","Шурик Хохмач","","Сталкер на поле нашел апельсин,\nИ не заметил хороший \"трамплин\",\nВынул он ножик, хотел его съесть,\nНоги нашли километров за шесть.",
+			2,"others","","","Трамплин сьесть? :)",
+			3,"others","","","Видимо, скряга - денег на консервы жалко.\nЛучше так:\nСталкер на елке узрел помидор,-\n\"Х, ну и тупой же пошел контроллёр!\""},
+condition = true}},
+{news =
+{ dialog = {3,
+			1,"others","Шурик Хохмач","","Сталкер от монстров на дерево влез\nДедушка-зомбик поднял обрез...\nВыстрел раздался и зомбик упал -\nСталкер свой маузер первым достал.",
+			2,"others","","","Гы... А ещё есть?",
+			3,"others","","","Давай-давай. Ещё давай! Хоть поржать напоследок..."},
+condition = true}},
+{news =
+{ dialog = {3,
+			1,"others","Шурик Хохмач","","Сталкер на Припять сбежал от зомбей,\nВот он идет все быстрей и быстрей,\nКончилась Припять, и на ЧАЭС\nБыстро пришел ему в гости п....ц.",
+			2,"others","","","И что? И не смешно вовсе.",
+			3,"others","","","А мне понравилось. Жги есчо!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","C'mon, folks, does anybody know any news about the outworld? How is life going on there?",
+			2,"others","","","Who's there so curious? Why don't you go to the army checkpoint at Cordon and ask there? Mr. Wanna-Know!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Have you heard the news? They say, Sidorovich is going to start publishing his tabloid - \"Zone Times\". And he's paying good money for info!",
+			2,"others","","","Bullshit! Sidorovich? For info?! Paying GOOD money?!! No way!"},
+condition = true}},
+{news =
+{ dialog = {3,
+			1,"others","","","Listen, aces, who's this Semetskiy?",
+			2,"others","","","Eh, newbies! Stay in the Zone for two weeks and you'll find out...",
+			3,"others","","","That's it! Stay ALIVE in the Zone for two weeks!.."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Look, guys! I've got some beacons from Sidorovich... But what should I do with them? Will you help me?",
+			2,"others","","","You're dolt! Couldn't you ask for the manual when buying them?! So damn many stupid fools there are nowadays..."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Hey, people! Whoever has been at Cordon recently... How's Sidorovich? Haven't heard about him for ages.",
+			2,"others","","","How can he be, this old profiteer?! No other way but wonderful! Living his usual life - swindling newbies and selling them his shit for big money..."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","People! I must see Swamp Doctor! Urgently! Who knows where I may find him?",
+			2,"others","","","Why the rush?",
+			1,"others","","","Don't laugh, please! I'm scared! The Zone is playing tricks on me! I was walking, admiring the full moon... Yawned, blinked, opened my eyes... No moon!!! Horrible!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Look, gents, I'm kind'a shocked! All sorts of idiots in the Zone! Just now I've seen some dolt dragging a bulldozer track near the wrecked bridge!",
+			2,"others","",1,", are you serious?! I must take a look at this clown myself..."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","Semen Hang","","Friends! Has anybody found a PDA recently? I seem to have got drunk in the bar and lost mine...",
+			2,"others","","","The one with a cracked glass?",
+			1,"others","Semen Hang","","Yeah.",
+			2,"others","","","And one corner has got scratches?",
+			1,"others","Semen Hang","","Yeah! Yeah! That's it!!!",
+			2,"others","","","Nope, haven't ever seen it."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","I cannot get to Sidorovich's, folks! I've been knocking at his door for an hour already, but no response. Maybe something is wrong...",
+			2,"others","","","No way! Nothing can ever be wrong with Sidorovich! It's because some witted craftsman has isntalled a new lock for him, so Sidorovich hasn't got used to it yet. Keep waiting.",
+			1,"others","","","I see. And how long must I wait?",
+			2,"others","","","Ha! Until either he opens the door or you get tired of waiting! It's up to you to choose, ha-ha!"},
+condition = true}},
+{news =
+{ dialog = {3,
+			1,"others","Senya Smalls","","Guys! I've got a piece of salted pork fat... Has anybody got some onions?",
+			2,"others","Petro Nail","","I've got some, but... What's in it for me?",
+			1,"others","Senya Smalls","","Lets share!",
+			3,"others","Mykola Pan","","And I've got some vodka and bread. Will we form a threesome?",
+			1,"others","Senya Smalls","","Deal! Lets meet by the bar at 23:00.",
+			2,"others","Petro Nail","","I'm coming. Wait for me."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Hey, guys! There's some suspicious lad bumming around near the \"Zaporozhets\". Should I try to scare him away?",
+			2,"others","","","What's suspicious about him?",
+			1,"others","","","How to say... The lad looks strange - an odd face, barefoot, wearing only some blue jeans...",
+			2,"others","",1,", either you a complete idiot or a lucky bastards!!! Anyway, just run away from him before he has noticed you! And God forbid you from meeting this \"lad\" ever again!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Folks! Does anybody happen to have a fishing line and hooks?",
+			2,"others","","","Are you crazy? Or just too much weed?! Where the hell should there be any fish here?",
+			1,"others","","","I don't care about any fish... I was passing by some swamp and got overwhelmed by the wish to sit a bit with a fishing rod... I'd sell my \"Soul\" for some fishing tackle...",
+			2,"others","","","Well, I see... If you happen to be cooking a fish soup afterwards, make sure you don't forget to spice it with antirad!.. Damn fisherman..."},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Ehhh! I wish I had a bicycle now... To ride a bit to recall the childhood... By the way, does anybody know a place to get one?",
+			2,"others","","","Have you asked Sidorovich about that?",
+			1,"others","","","Can he arrange one?!",
+			2,"others","","","Sidorovich can arrange whatever for good money! Don't underestimate the bloody profiteer!"},
+condition = true}},
+{news =
+{ dialog = {2,
+			1,"others","","","Guys! GUYS! I've seen a naked girl today!!!",
+			2,"others","","","WHERE?!?!?!",
+			1,"others","","","In the bar! On a picture.",
+			2,"others","","","Fuck you, bastard!!!"},
+condition = true}}
+}
+
+local dialog_msg_attrib = {
+["dolg"] = {498,141,"%c[255,255,0,0]\"Duty\""},
+["freedom"] = {498,94,"%c[255,0,255,0]\"Freedom\""},
+["others"] = {498,47,"%c[255,160,160,160]"}
+}
+
+function dialog_messenger(num_of_msgr)
+local number = {}
+for i=1,num_of_msgr do
+	number[i] = gen_names_strings()
+end
+return number
+end
+
+function net_dialogs()
+if math.random() < net_dialogs_message_prob then
+	if post_message_net_dialogs == 1 then
+		local post_of_dialog = dialog_msg_texts[math.random(table.getn(dialog_msg_texts))]
+		if post_of_dialog.news.condition ~= nil and (post_of_dialog.news.condition) ~= true then
+			local func = post_of_dialog.news.condition
+			local arg1 = nil
+			local arg2 = nil
+			if post_of_dialog.news.argument1 ~= nil then arg1 = post_of_dialog.news.argument1 end
+			if post_of_dialog.news.argument2 ~= nil then arg2 = post_of_dialog.news.argument2 end
+			if func(arg1, arg2) == true then
+				send_dialogs(post_of_dialog.news.dialog)
+			else return end
+		end
+	end
+else
+	show_news_another()
+end
+end
+
+function send_dialogs(dialog)
+local name_of_msgr = dialog_messenger(dialog[1])
+local msg_delay = 0
+local from1 = ""
+local from2 = ""
+local i = 2
+while (dialog[i]) do
+	local attrib_sep = dialog[i+1]
+	local icon_x = dialog_msg_attrib[attrib_sep][1]
+	local icon_y = dialog_msg_attrib[attrib_sep][2]
+	local msg_color = dialog_msg_attrib[attrib_sep][3]
+	if dialog[i+2] == "" then
+		local speaker_num = dialog[i]
+		from1 = name_of_msgr[speaker_num]
+	elseif dialog[i+2] == " " then
+		from1 = ""
+	else
+		from1 = dialog[i+2]
+	end
+	if dialog[i+3] ~= "" then
+		local speaker_num = dialog[i+3]
+		if (name_of_msgr[speaker_num]) then
+			from2 = name_of_msgr[speaker_num]
+		else
+			from2 = dialog[i+3]
+		end
+	else
+		from2 = ""
+	end
+	local msg_text = dialog[i+4]
+	local news_text = msg_color.. from1 ..":\\n%c[default]" .. from2 .. msg_text
+	db.actor:give_game_news(news_text, "ui\\ui_iconsTotal", Frect():set(icon_x,icon_y,83,47), msg_delay, news_showtime)
+	i = i+5
+	msg_delay = msg_delay+math.random(3000,5000)
+end
+end
